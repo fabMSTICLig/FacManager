@@ -602,6 +602,6 @@ function deleteSupplyUsage(su)
 </script>
 <style>
 .modal-dialog {
-  max-width: 800px;
+  max-width: 1000px;
 }
 </style>

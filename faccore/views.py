@@ -104,6 +104,7 @@ class SupplyViewSet(viewsets.ModelViewSet):
     queryset = Supply.objects.all()
     serializer_class = SupplySerializer
     permission_classes = (IsAdminOrReadOnly,)
+    search_fields = ['name']
 
     @action(methods=['get'], detail=False)
     def units(self, request):
@@ -184,18 +185,21 @@ class MachineModelViewSet(viewsets.ModelViewSet):
     queryset = MachineModel.objects.all()
     serializer_class = MachineModelSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    search_fields = ['name']
 
 
 class ManagerViewSet(viewsets.ModelViewSet):
     queryset = Manager.objects.all()
     serializer_class = ManagerSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    search_fields = ['name']
 
 
 class MachineViewSet(viewsets.ModelViewSet):
     queryset = Machine.objects.all()
     serializer_class = MachineSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    search_fields = ['name']
 
 
 class AvailabilityViewSet(viewsets.ModelViewSet):
@@ -239,6 +243,7 @@ class ReservationTypeViewSet(viewsets.ModelViewSet):
     queryset = ReservationType.objects.all()
     serializer_class = ReservationTypeSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    search_fields = ['name']
 
 
 class TrainingLevelView(APIView):

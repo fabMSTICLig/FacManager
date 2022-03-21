@@ -7,7 +7,6 @@ class IdsFilter(filters.BaseFilterBackend):
     """
 
     def filter_queryset(self, request, queryset, view):
-        print(request.query_params)
         if('ids' in request.query_params.keys()):
             ids_q = request.query_params.get('ids', None)
             ids = []

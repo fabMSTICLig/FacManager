@@ -12,7 +12,7 @@
           label="name"
           mode="multiple"
           :options="fetchOptions"
-          :loaing="optionsLoading"
+          :loading="optionsLoading"
           :clear-on-select="!isArray"
           :close-on-select="!isArray"
           :filter-results="false"
