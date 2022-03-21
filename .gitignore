@@ -1,0 +1,14 @@
+config
+*.pyc
+__pycache__/
+*.swp
+nginx/certs
+dist
+static
+*.sqlite3
+node_modules
+venv
+venv*
+*.log
+.env.local
+local_settings.py

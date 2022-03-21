@@ -1,0 +1,7 @@
+
+L'utilisateur {{ fullusername }} demande une réservation {{ resaname }}
+{{ startdate }}
+{{ enddate }}
+
+Commentaire:
+{{ commentary }}

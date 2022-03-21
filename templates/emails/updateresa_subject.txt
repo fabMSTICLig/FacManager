@@ -1,0 +1,1 @@
+[FacManager] Votre réservation {{ resaname }} a le status {{ status }}

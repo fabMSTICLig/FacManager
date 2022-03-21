@@ -1,0 +1,8 @@
+Django
+gunicorn
+djangorestframework
+django-filter
+django-su
+django-cas-ng
+python-dateutil
+django-auth-ldap==3.0.0

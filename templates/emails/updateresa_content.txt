@@ -1,0 +1,8 @@
+Cher utilisateur,
+
+Votre réservation {{ resaname }} du {{ startdate }} a maintenant le status {{ status }}.
+
+Vous serez notfié de tout changement.
+
+Cordialement
+L'équipe du fablab

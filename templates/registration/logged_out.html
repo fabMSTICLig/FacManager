@@ -1,0 +1,12 @@
+{% extends "registration/base.html" %}
+
+{% block content %}
+        <div class="card">
+            <div class="card-header">
+                <h3>Logout</h3>
+            </div>
+            <div class="card-body">
+                <p>Your are logged off.</p><a class="card-link" href="/auth/login">Login</a><a class="card-link" href="/accounts/login/?next=/">Use CAS</a></div>
+        </div>        
+{% endblock %}
+

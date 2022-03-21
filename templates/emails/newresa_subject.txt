@@ -1,0 +1,1 @@
+[FacManager] Nouvelle reservation {{ resaname }} de {{ fullusername }} 
