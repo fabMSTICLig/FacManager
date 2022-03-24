@@ -1,6 +1,24 @@
 import os
 
-DEBUG=True
+DEBUG=False
+
+ORGANIZATION_TYPES = (
+         ('Labo','Laboratoire'),
+         ('Ecole','Ecole'),
+         ('Externe','Externe'),
+         ('Platforme','Platforme'),
+         ('Service','Service'),
+         ('Recherche','Recherche'),
+         ('Composante','Composante Universitaire')
+)
+
+
+# Web acces protections
+SITE_URL = 'https://example.fr'
+ALLOWED_HOSTS = ['example.fr']
+
+CSRF_COOKIE_DOMAIN="example.fr"
+CSRF_TRUSTED_ORIGINS=["example.fr"]
 
 # Web acces protections
 ALLOWED_HOSTS = ['localhost']
@@ -10,18 +28,21 @@ if DEBUG == False :
     USE_X_FORWARDED_HOST=True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# CAS settings
-CAS_SERVER_URL = 'https://CASURL/'
-CAS_VERSION = '3'
 
-#LDAP settings
-AUTH_LDAP_SERVER_URI = "ldaps://example.com"
-AUTH_LDAP_BIND_DN = ""
-AUTH_LDAP_BIND_PASSWORD = ""
-AUTH_LDAP_USER_SEARCH = LDAPSearch(
-    "ou=user,dc=example,dc=com", ldap.SCOPE_SUBTREE, "(uid=%(user)s)"
-)
-AUTH_LDAP_USER_ATTR_MAP = {"first_name": "givenName", "last_name": "sn", "email": "mail"}
+
+# CAS settings
+# CAS_SERVER_URL = 'https://CASURL/'
+# CAS_VERSION = '3'
+# CAS_CHECK_NEXT = False
+
+# LDAP settings
+# AUTH_LDAP_SERVER_URI = "ldaps://example.com"
+# AUTH_LDAP_BIND_DN = ""
+# AUTH_LDAP_BIND_PASSWORD = ""
+# AUTH_LDAP_USER_SEARCH = LDAPSearch(
+#    "ou=user,dc=example,dc=com", ldap.SCOPE_SUBTREE, "(uid=%(user)s)"
+# )
+# AUTH_LDAP_USER_ATTR_MAP = {"first_name": "givenName", "last_name": "sn", "email": "mail"}
 
 
 # Name of the lab, used in the notification mails
@@ -29,12 +50,13 @@ LABNAME = "FacMANAGER"
 
 # Email settings
 # https://docs.djangoproject.com/en/2.2/topics/email/
-EMAIL_HOST = 'smtps.example.org'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'EMAILUSER'
-EMAIL_HOST_PASSWORD = 'EMAILPASS'
-EMAIL_USE_TLS = True
-EMAIL_TIMEOUT=10
+# EMAIL_HOST = 'smtps.example.org'
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = 'EMAILUSER'
+# EMAIL_HOST_PASSWORD = 'EMAILPASS'
+# EMAIL_USE_TLS = True
+# EMAIL_TIMEOUT=10
+
 # FacManager Email settings
 # Email which sends notification mails
 EMAIL_SENDER = 'admin@example.org'
@@ -45,6 +67,6 @@ if DEBUG == True:
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     STATIC_ROOT = ''
     STATICFILES_DIRS = [
-        os.path.join(BASE_DIR, "../static"),
+        os.path.join(BASE_DIR, "./static"),
     ]
 

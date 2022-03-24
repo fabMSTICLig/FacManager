@@ -1,44 +1,23 @@
+<!--
+Copyright (C) 2020-2022 LIG Université Grenoble Alpes
+
+
+This file is part of FacManager.
+
+FacManager is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+FacManager is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with FacManager. If not, see <https://www.gnu.org/licenses/>
+
+@author Germain Lemasson
+-->
+
 <template>
   <div class="home">
     <div class="row justify-content-center">
       <div class="col-12 col-md-12">
-        <div class="card">
-          <div class="card-header">
-            <h1>Site de reservation du FabMSTIC</h1>
-          </div>
-          <div class="card-body">
-            <p>
-              Ce site permet aux utilisateurs du FabMSTIC de réserver des
-              créneaux horraires.
-            </p>
-            <p>Les étapes à suivre pour la première réservation:</p>
-            <ul>
-              <li>
-                Se connecter au site en utilisant le
-                <a href="accounts/login?next=/">CAS UGA</a>
-              </li>
-              <li>
-                Remplir les informations de son
-                <router-link :to="{ name: 'profile' }">profil</router-link>
-                (nom, prénom, email)
-              </li>
-              <li>
-                Lire la
-                <a href="https://fabmstic.imag.fr/pages/la-charte.html"
-                  >charte</a
-                >
-              </li>
-              <li>Attendre que votre compte soit validé</li>
-              <li>
-                Réserver un crénaux en choisissant une Initiation (Laser, 3D,
-                ...)
-              </li>
-              <li>
-                Attendre le mail confirmant que votre réservation est acceptée
-              </li>
-            </ul>
-          </div>
-        </div>
+      <HomeTop/>
       </div>
       <div class="col col-12">
         <div class="card mt-2" v-if="loaded">
@@ -65,6 +44,8 @@ import frLocale from "@fullcalendar/core/locales/fr";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { nextTick,ref,onBeforeMount } from "vue";
+
+import HomeTop from "@/pages/HomeTop.vue";
 
 import { useStore } from "vuex";
 const store = useStore();

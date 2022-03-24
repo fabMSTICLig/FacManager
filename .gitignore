@@ -1,4 +1,7 @@
 config
+frontend/src/pages/LegalNotice.vue
+frontend/src/pages/HomeTop.vue
+
 *.pyc
 __pycache__/
 *.swp

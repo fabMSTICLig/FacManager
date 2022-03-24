@@ -1,3 +1,18 @@
+"""
+Copyright (C) 2020-2022 LIG Université Grenoble Alpes
+
+
+This file is part of FacManager.
+
+FacManager is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+FacManager is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with FacManager. If not, see <https://www.gnu.org/licenses/>
+
+@author Germain Lemasson
+"""
+
 from datetime import timedelta, datetime
 import dateutil.parser
 from collections import OrderedDict
@@ -538,12 +553,6 @@ class UsagesView(APIView):
                 users[resa.user.id] = {'first_name': resa.user.first_name, 'last_name': resa.user.last_name, 'username': resa.user.username}
             if resa.project and resa.project.id not in projects:
                 projects[resa.project.id] = {'name': resa.project.name}
-
-        #from django.db import connection
-        # for q in connection.queries:
-        #    print(q['sql'])
-        #    print()
-
         return Response({'reservations': resas, 'supplies': supplies, 'users': users, 'projects': projects})
 
 

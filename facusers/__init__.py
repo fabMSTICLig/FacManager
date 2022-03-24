@@ -1,19 +1,15 @@
 """
-Facuser is the module for managing all the users of the fac lab
+Copyright (C) 2020-2022 LIG Université Grenoble Alpes
 
-A user can be a person or an organization
 
-A person refer to a physical person
+This file is part of FacManager.
 
-An oraganization can refer to a laboratory, a school, a startup, ...
+FacManager is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-Persons belongs to organizations and can participate to projects.
-An organization can also participate to a project, 
-this allow organization without members to participate to projects, 
-for exemple a financer
+FacManager is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-A project has a starting and a ending date. The ending date is optional
-It can represent different kind of activities: a lesson, 
-a research project, a student project. It can also be used to regroup 
-the work of different persons for example the work of a research team
+You should have received a copy of the GNU General Public License along with FacManager. If not, see <https://www.gnu.org/licenses/>
+
+@author Germain Lemasson
 """
+
