@@ -30,6 +30,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, reverse_lazy, include, re_path
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.generic.base import RedirectView
 from django.views.generic.base import TemplateView
 import django_cas_ng.views
@@ -41,7 +42,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('facusers.urls')),
     path('api/', include('faccore.urls')),
-    re_path('^$', TemplateView.as_view(template_name="index.html")),
+    re_path('^$', ensure_csrf_cookie(TemplateView.as_view(template_name="index.html"))),
     path('cas/login/', django_cas_ng.views.LoginView.as_view(), name='cas_ng_login'),
     path('cas/logout/', django_cas_ng.views.LogoutView.as_view(), name='cas_ng_logout'),
     path('login/', views.LoginView.as_view()),
