@@ -576,10 +576,11 @@ async function handleSubmit() {
     }
     show.value = false;
   } catch (e) {
-    console.log(e);
-    console.log(e.response);
     if (e.response.status == 400)
-      errors.value = errors.value.concat(e.response.data.non_field_errors);
+      if(e.response.data.non_field_errors)
+        errors.value = errors.value.concat(e.response.data.non_field_errors);
+      else if(Array.isArray(e.response.data))
+        errors.value = errors.value.concat(e.response.data);
   }
   waiting.value = false;
 }

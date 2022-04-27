@@ -127,7 +127,7 @@ class SupplyViewSet(viewsets.ModelViewSet):
         Return the supply units
         """
         return Response(dict((x, y) for x, y in Supply.UNITS),
-                status=status.HTTP_200_OK)
+                        status=status.HTTP_200_OK)
 
 
 class SupplyUsageViewSet(viewsets.ModelViewSet):
@@ -378,7 +378,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
         if(not request.user.is_staff):
             if(not request.user.charter):
                 raise serializers.ValidationError(
-                    "You must agree with the charter before making any reservation", code="invalid")
+                    "You must agree with the charter before making any reservation: " + settings.CHARTER_URL, code="invalid")
             if('status' in request.data):
                 raise PermissionDenied(
                     "You are not allowed to specify the status")

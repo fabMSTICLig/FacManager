@@ -12,6 +12,7 @@ ORGANIZATION_TYPES = (
          ('Composante','Composante Universitaire')
 )
 
+CHARTER_URL = 'https://example.fr/charter.html'
 
 # Web acces protections
 SITE_URL = 'https://example.fr'

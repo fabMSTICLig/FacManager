@@ -22,10 +22,10 @@ You should have received a copy of the GNU General Public License along with Fac
       <div class="fm-event-legend">
         <div>
           <strong>Opening Hours : </strong
-          ><span
-            >Monday 13:30 to 17:00, Tuesday-Friday 9:00 to 11:00 and 13:30 to
+        ><span
+          >Monday 13:30 to 17:00, Tuesday-Friday 9:00 to 11:00 and 13:30 to
             17:00</span
-          >
+        >
         </div>
         <div class="d-flex">
           <span class="avail-background p-2 text-dark">Resources availabilities</span>
@@ -64,6 +64,17 @@ You should have received a copy of the GNU General Public License along with Fac
       @deleted="availDeleted"
       @updated="availUpdated"
     />
+    <modal
+      id="modal-charter"
+      title="Charter"
+      :show="showCharter"
+      :resolve="()=>showCharter=false"
+    >
+      <p>
+        You must read the charter before you can make any reservation. <a :href="charterUrl">{{charterUrl}}</a>
+      </p>
+    </modal>
+
   </div>
 </template>
 
@@ -81,6 +92,7 @@ import { useStore } from "vuex";
 import ReservationEdit from "./ReservationEdit.vue";
 import EventEdit from "./EventEdit.vue";
 import AvailabilityEdit from "./AvailabilityEdit.vue";
+import Modal from "@/plugins/modal";
 
 const store = useStore();
 
@@ -91,6 +103,9 @@ const RESA_COLORS = JSON.parse(import.meta.env.VITE_APP_RESA_COLORS);
 const loaded = ref(false);
 const calendar = ref();
 let calAPI = null;
+
+const showCharter = ref(false)
+const charterUrl = import.meta.env.VITE_APP_CHARTER_URL
 
 const resources = ref([]);
 const datesQuery = ref({});
@@ -125,6 +140,7 @@ onBeforeMount(async () => {
   loaded.value = true;
   await nextTick();
   calAPI = calendar.value.getApi();
+  if(!authUser.value.charter) showCharter.value=true;
 });
 
 function eventToCalEvent(event) {
@@ -280,7 +296,7 @@ function selectTime(infos) {
   } else {
     if (modeAvail.value) {
       if (isAdmin.value)
-        availCreate(infos.startStr, infos.endStr, infos.resource);
+      availCreate(infos.startStr, infos.endStr, infos.resource);
     } else {
       resaCreate(infos.startStr, infos.endStr, infos.resource);
     }
