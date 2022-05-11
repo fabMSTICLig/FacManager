@@ -115,14 +115,14 @@ You should have received a copy of the GNU General Public License along with Fac
                     </div>
                   </fieldset>
                 </div>
-                <div class="col-12 col-md" v-if="object.id">
+                <div v-if="object.id" class="col-12 col-md">
                   <fieldset>
                     <legend>
                       Training Levels
                       <button
-                        @click="updateTLs"
                         type="button"
                         class="btn btn-primary float-end"
+                        @click="updateTLs"
                       >
                         Update Training Levels
                       </button>
@@ -151,10 +151,10 @@ You should have received a copy of the GNU General Public License along with Fac
                           <div>
                             <div class="form-check form-switch">
                               <input
+                                :id="'cslevel' + tl.machine_model"
+                                v-model="tl.need_manager"
                                 type="checkbox"
                                 class="form-check-input"
-                                v-model="tl.need_manager"
-                                :id="'cslevel' + tl.machine_model"
                               />
                             </div>
                           </div>
@@ -246,6 +246,7 @@ function updateTLs() {
 const route = useRoute();
 
 onBeforeMount(async () => {
+  await store.dispatch("resources/fetchResources");
   await initObject(route);
 
   if (object.value.id) {

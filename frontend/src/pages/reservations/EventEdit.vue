@@ -15,15 +15,15 @@ You should have received a copy of the GNU General Public License along with Fac
 
 <template>
   <modal
+    v-show="show"
     id="modal-event"
     :show="true"
-    v-show="show"
     title="Event"
     :resolve="resolveModal"
     hide-footer
   >
     <form ref="form" @submit.prevent="handleSubmit">
-      <div class="invalid-feedback d-block" ref="event_errors" v-if="errors">
+      <div v-if="errors" ref="event_errors" class="invalid-feedback d-block">
         <ul class="error-messages">
           <li v-for="e in errors" :key="e">{{ e }}</li>
         </ul>
@@ -46,18 +46,18 @@ You should have received a copy of the GNU General Public License along with Fac
           <div class="form-row">
             <div class="col">
               <input
-                class="form-control"
                 id="event-startdate"
                 v-model="date_date"
+                class="form-control"
                 type="date"
                 required
               />
             </div>
             <div class="col">
               <input
-                class="form-control"
                 id="event-starttime"
                 v-model="date_time"
+                class="form-control"
                 type="time"
                 :step="MIN_START_MINUTE"
                 required
@@ -70,18 +70,18 @@ You should have received a copy of the GNU General Public License along with Fac
           <div class="form-row">
             <div class="col">
               <input
-                class="form-control"
                 id="event-enddate"
                 v-model="enddate_date"
+                class="form-control"
                 type="date"
                 required
               />
             </div>
             <div class="col">
               <input
-                class="form-control"
                 id="event-endtime"
                 v-model="enddate_time"
+                class="form-control"
                 type="time"
                 :step="MIN_START_MINUTE"
                 required
@@ -93,9 +93,9 @@ You should have received a copy of the GNU General Public License along with Fac
         <div class="mb-3">
           <label for="event-desc">Description (Optional):</label>
           <textarea
-            class="form-control"
             id="event-desc"
             v-model="object.commentary"
+            class="form-control"
             placeholder="Description"
           ></textarea>
         </div>

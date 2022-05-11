@@ -15,18 +15,18 @@ You should have received a copy of the GNU General Public License along with Fac
 
 <template>
   <modal
+    v-show="show"
     id="modal-availability"
     :show="true"
-    v-show="show"
     title="Availability"
     :resolve="resolveModal"
     hide-footer
   >
     <form ref="form" @submit.prevent="handleSubmit">
       <div
-        class="invalid-feedback d-block"
-        ref="availability_errors"
         v-if="errors"
+        ref="availability_errors"
+        class="invalid-feedback d-block"
       >
         <ul class="error-messages">
           <li v-for="e in errors" :key="e">{{ e }}</li>
@@ -38,18 +38,18 @@ You should have received a copy of the GNU General Public License along with Fac
           <div class="form-row">
             <div class="col">
               <input
-                class="form-control"
                 id="availability-startdate"
                 v-model="date_date"
+                class="form-control"
                 type="date"
                 required
               />
             </div>
             <div class="col">
               <input
-                class="form-control"
                 id="availability-starttime"
                 v-model="date_time"
+                class="form-control"
                 type="time"
                 :step="MIN_START_MINUTE"
                 required
@@ -62,18 +62,18 @@ You should have received a copy of the GNU General Public License along with Fac
           <div class="form-row">
             <div class="col">
               <input
-                class="form-control"
                 id="availability-enddate"
                 v-model="enddate_date"
+                class="form-control"
                 type="date"
                 required
               />
             </div>
             <div class="col">
               <input
-                class="form-control"
                 id="availability-endtime"
                 v-model="enddate_time"
+                class="form-control"
                 type="time"
                 :step="MIN_START_MINUTE"
                 required
@@ -81,12 +81,12 @@ You should have received a copy of the GNU General Public License along with Fac
             </div>
           </div>
         </div>
-        <div class="mb-3" v-if="!object.id">
+        <div v-if="!object.id" class="mb-3">
           <label for="occurence">Occurence:</label>
           <input
-            class="form-control"
             id="occurence"
             v-model="object.occurence"
+            class="form-control"
             type="number"
             min="1"
             required
@@ -96,17 +96,17 @@ You should have received a copy of the GNU General Public License along with Fac
           <label for="avail-resources">Resources:</label>
           <div class="input-group">
             <select
-              class="form-control"
               id="avail-ressource"
               v-model="object.resources"
+              class="form-control"
               multiple
               :select-size="10"
               required
             >
-              <option v-for="v in machines" :value="v.id" :key="v.id">
+              <option v-for="v in machines" :key="v.id" :value="v.id">
                 {{ v.name }}
               </option>
-              <option v-for="v in managers" :value="v.id" :key="v.id">
+              <option v-for="v in managers" :key="v.id" :value="v.id">
                 {{ v.name }}
               </option>
             </select>

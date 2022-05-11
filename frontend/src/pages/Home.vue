@@ -20,13 +20,13 @@ You should have received a copy of the GNU General Public License along with Fac
       <HomeTop/>
       </div>
       <div class="col col-12">
-        <div class="card mt-2" v-if="loaded">
+        <div v-if="loaded" class="card mt-2">
           <div class="card-header">
             <h2>Planning</h2>
           </div>
           <div class="card-body">
             <div>
-              <FullCalendar :options="calendarOptions" ref="calendar"/>
+              <FullCalendar ref="calendar" :options="calendarOptions"/>
             </div>
           </div>
         </div>

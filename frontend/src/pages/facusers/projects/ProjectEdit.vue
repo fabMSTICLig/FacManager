@@ -98,10 +98,10 @@ You should have received a copy of the GNU General Public License along with Fac
                 <legend>Members</legend>
                 <div class="mb-3">
                   <DynList
+                    v-slot="{item}"
                     v-model="object.members"
                     ressource="users"
                     :make-label="userLabel"
-                    v-slot="{item}"
                   >
                     @{{ item.username }} {{ item.first_name }} {{ item.last_name }}
                   </DynList>

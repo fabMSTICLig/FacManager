@@ -14,9 +14,9 @@ You should have received a copy of the GNU General Public License along with Fac
 -->
 
 <template>
-  <div class="row" v-if="loaded">
+  <div v-if="loaded" class="row">
     <div class="col-12">
-      <FullCalendar :options="calendarOptions" ref="calendar" />
+      <FullCalendar ref="calendar" :options="calendarOptions" />
     </div>
     <div class="col col-12">
       <div class="fm-event-legend">
@@ -33,9 +33,9 @@ You should have received a copy of the GNU General Public License along with Fac
         <div class="d-flex text-light">
           <span class="event-background p-2">Event</span>
           <span
-            class="fc-event p-2"
             v-for="(v, k) in RESA_COLORS"
             :key="k"
+            class="fc-event p-2"
             :style="'background-color:' + v"
             v-text="'Reservation ' + k"
           ></span>

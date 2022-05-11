@@ -15,21 +15,21 @@ You should have received a copy of the GNU General Public License along with Fac
 
 <template>
   <modal
+    v-show="show"
     id="modal-reservation"
     :show="true"
-    v-show="show"
     title="Reservation"
     :resolve="resolveModal"
     hide-footer
   >
     <form ref="form" @submit.prevent="handleSubmit">
-      <div class="invalid-feedback d-block" ref="resa_errors" v-if="errors">
+      <div v-if="errors" ref="resa_errors" class="invalid-feedback d-block">
         <ul class="error-messages">
           <li v-for="e in errors" :key="e">{{ e }}</li>
         </ul>
       </div>
       <div class="row">
-        <fieldset class="col-12 col-md-6" v-bind:disabled="reservationReadOnly">
+        <fieldset class="col-12 col-md-6" :disabled="reservationReadOnly">
           <template v-if="isAdmin">
             <div class="mb-3">
               <label class="form-label" for="resa-user">User :</label>
@@ -50,9 +50,9 @@ You should have received a copy of the GNU General Public License along with Fac
               <label for="resa-status">Status:</label>
               <div class="input-group">
                 <select
-                  class="form-control"
                   id="resa-status"
                   v-model="object.status"
+                  class="form-control"
                   required
                 >
                   <option>Requested</option>
@@ -63,7 +63,7 @@ You should have received a copy of the GNU General Public License along with Fac
               </div>
             </div>
           </template>
-          <div class="alert alert-warning" v-show="pasteDate">
+          <div v-show="pasteDate" class="alert alert-warning">
             <strong>Warning!</strong> The date is in the past.
           </div>
           <div class="mb-3">
@@ -71,18 +71,18 @@ You should have received a copy of the GNU General Public License along with Fac
             <div class="form-row">
               <div class="col">
                 <input
-                  class="form-control"
                   id="resa-startdate"
                   v-model="date_date"
+                  class="form-control"
                   type="date"
                   required
                 />
               </div>
               <div class="col">
                 <input
-                  class="form-control"
                   id="resa-starttime"
                   v-model="date_time"
+                  class="form-control"
                   type="time"
                   :min="isAdmin ? '' : START_HOUR"
                   :max="isAdmin ? '' : END_HOUR"
@@ -96,9 +96,9 @@ You should have received a copy of the GNU General Public License along with Fac
             <label for="resa-duration">Duration:</label>
             <div class="input-group">
               <input
-                class="form-control"
                 id="resa-duration"
                 v-model="duration"
+                class="form-control"
                 type="number"
                 :min="reservationType.min_time_slot"
                 :step="reservationType.min_time_slot"
@@ -112,18 +112,18 @@ You should have received a copy of the GNU General Public License along with Fac
           <div class="mb-3">
             <label for="resa-comm">Commentary (Optional):</label>
             <textarea
-              class="form-control"
               id="resa-comm"
               v-model="object.commentary"
+              class="form-control"
               placeholder="Commentary"
             ></textarea>
           </div>
           <div class="mb-3">
             <label for="resa-project">Project (Optional):</label>
             <select
-              class="form-control"
               id="resa-project"
               v-model="object.project"
+              class="form-control"
             >
               <option></option>
               <option
@@ -137,21 +137,21 @@ You should have received a copy of the GNU General Public License along with Fac
         </fieldset>
         <div class="col-12 col-md-6">
           <div class="row">
-            <fieldset class="col-12" v-bind:disabled="reservationReadOnly">
+            <fieldset class="col-12" :disabled="reservationReadOnly">
               <div class="mb-3">
                 <label for="resa-type">Type:</label>
                 <div class="input-group">
                   <select
-                    class="form-control"
                     id="resa-type"
                     ref="typeInput"
                     v-model="object.reservation_type"
+                    class="form-control"
                     required
                   >
                     <option
                       v-for="rtype in allowedTypes"
-                      v-bind:value="rtype.id"
                       :key="rtype.id"
+                      :value="rtype.id"
                     >
                       {{ rtype.name }}
                     </option>
@@ -159,12 +159,12 @@ You should have received a copy of the GNU General Public License along with Fac
                 </div>
               </div>
               <div
-                class="mb-3"
                 v-for="mc in machinesChoices"
                 :key="mc.model.name"
+                class="mb-3"
               >
                 <label v-text="mc.model.name"></label>
-                <select class="form-control" v-model="mc.selected" required>
+                <select v-model="mc.selected" class="form-control" required>
                   <option
                     v-for="m in mc.model.instances"
                     :key="m.id"
@@ -173,19 +173,19 @@ You should have received a copy of the GNU General Public License along with Fac
                   />
                 </select>
               </div>
-              <div class="mb-3" v-if="reservationType.need_manager">
+              <div v-if="reservationType.need_manager" class="mb-3">
                 <label for="resa-manager">Manager:</label>
                 <div class="input-group">
                   <select
-                    class="form-control"
                     id="resa-manager"
                     v-model="object.manager"
+                    class="form-control"
                     required
                   >
                     <option
                       v-for="manager in managers"
-                      v-bind:value="manager.id"
                       :key="manager.id"
+                      :value="manager.id"
                     >
                       {{ manager.name }}
                     </option>
@@ -193,7 +193,7 @@ You should have received a copy of the GNU General Public License along with Fac
                 </div>
               </div>
             </fieldset>
-            <div class="col-12" v-if="object.id">
+            <div v-if="object.id && addSU != null" class="col-12">
               <table class="table">
                 <thead>
                 <tr>
@@ -206,11 +206,11 @@ You should have received a copy of the GNU General Public License along with Fac
             <tbody>
                 <tr>
                   <td>
-                    <select class="form-control w-auto" v-model="addSU.supply">
+                    <select v-model="addSU.supply" class="form-control w-auto">
                       <option
                         v-for="supply in supplies"
-                        v-bind:value="supply.id"
                         :key="supply.id"
+                        :value="supply.id"
                       >
                         {{ supply.name }}
                       </option>
@@ -246,14 +246,14 @@ You should have received a copy of the GNU General Public License along with Fac
                 <tr v-for="su in supplyUsages" :key="su.id">
                   <td>
                     <select
+                      v-model="su.supply"
                       class="form-control w-auto"
                       :readonly="!isAdmin && su.validated"
-                      v-model="su.supply"
                     >
                       <option
                         v-for="supply in supplies"
-                        v-bind:value="supply.id"
                         :key="supply.id"
+                        :value="supply.id"
                       >
                         {{ supply.name }}
                       </option>
@@ -276,9 +276,9 @@ You should have received a copy of the GNU General Public License along with Fac
                     <div>
                       <div class="form-check form-switch">
                         <input
+                          v-model="su.validated"
                           type="checkbox"
                           class="form-check-input"
-                          v-model="su.validated"
                         />
                       </div>
                     </div>
@@ -286,7 +286,7 @@ You should have received a copy of the GNU General Public License along with Fac
 
                   <td>
                     <div v-if="!isAdmin && su.validated">Validated</div>
-                    <div class="btn-group col-auto" role="group" v-else>
+                    <div v-else class="btn-group col-auto" role="group">
                       <button
                         class="btn btn-primary btn-sm"
                         type="button"
@@ -328,10 +328,10 @@ You should have received a copy of the GNU General Public License along with Fac
           {{ reservationReadOnly ? "Close" : "Cancel" }}
         </button>
         <button
+          v-if="!reservationReadOnly"
           type="submit"
           :disabled="waiting"
           class="btn btn-primary"
-          v-if="!reservationReadOnly"
         >
           Ok
         </button>
@@ -450,7 +450,7 @@ const date_time = computed({
   },
 });
 const pasteDate = computed(() => {
-  return Date.parse(object.value.start_date) - Date.now() < 0 && (object.status == "Requested" || ! object.value.id);
+  return Date.parse(object.value.start_date) - Date.now() < 0 && (object.value.status == "Requested" || ! object.value.id);
 });
 const duration = computed({
   get: function () {
@@ -599,7 +599,11 @@ function getSupplyUnit(supplyid) {
   if (supply) return supplyUnits.value[supply.unit];
   else return "";
 }
-const addSU = ref({quantity:1, supply:supplies.value[0].id});
+const addSU = ref(null);
+if(supplies.value.length)
+{
+  addSU.value={quantity:1, supply:supplies.value[0].id};
+}
 
 function addSupplyUsage()
 {

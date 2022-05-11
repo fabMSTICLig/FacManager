@@ -66,58 +66,58 @@ You should have received a copy of the GNU General Public License along with Fac
         <template v-if="!authUser.externe">
           <div class="mb-3">
             <label for="oldPassword">Old password:</label>
-            <div class="valid-feedback d-block" v-if="goodpassword">
+            <div v-if="goodpassword" class="valid-feedback d-block">
               Password changed
             </div>
-            <div class="invalid-feedback d-block" v-if="goodpassword == false">
+            <div v-if="goodpassword == false" class="invalid-feedback d-block">
               Wrong Password
             </div>
 
-            <div class="invalid-feedback d-block" v-if="passvalid == false">
+            <div v-if="passvalid == false" class="invalid-feedback d-block">
               The old password is required for changing it
             </div>
-            <div class="invalid-feedback d-block" v-if="passvalid == false">
+            <div v-if="passvalid == false" class="invalid-feedback d-block">
               The new password is required
             </div>
-            <div class="invalid-feedback d-block" v-if="passvalid == false">
+            <div v-if="passvalid == false" class="invalid-feedback d-block">
               The Confirm Password is required and must be the same as New
               Password
             </div>
 
             <input
-              class="form-control"
               id="oldPassword"
+              v-model="oldPassword"
+              class="form-control"
               type="password"
               :class="
                 passvalid == null ? '' : passvalid ? 'is-valid' : 'is-invalid'
               "
-              v-model="oldPassword"
               placeholder="Enter current password"
             />
           </div>
           <div class="mb-3">
             <label for="newpass">New password:</label>
             <input
-              class="form-control"
               id="newpass"
+              v-model="newPassword"
+              class="form-control"
               type="password"
               :class="
                 passvalid == null ? '' : passvalid ? 'is-valid' : 'is-invalid'
               "
-              v-model="newPassword"
               placeholder="Enter new password"
             />
           </div>
           <div class="mb-3">
             <label for="newpassconf">Confirm new password:</label>
             <input
-              class="form-control"
               id="newpassconf"
+              v-model="newPasswordConf"
+              class="form-control"
               type="password"
               :class="
                 passvalid == null ? '' : passvalid ? 'is-valid' : 'is-invalid'
               "
-              v-model="newPasswordConf"
               placeholder="Confirm password"
             />
           </div>

@@ -29,24 +29,24 @@ You should have received a copy of the GNU General Public License along with Fac
                 <div class="col-auto">
                   <label for="mindate" class="form-label">Min Date</label>
                   <input
+                    id="mindate"
                     type="date"
                     class="form-control"
-                    id="mindate"
                     :value="fMinDate"
                   />
                 </div>
                 <div class="col-auto">
                   <label for="maxdate" class="form-label">Max Date</label>
                   <input
+                    id="maxdate"
                     type="date"
                     class="form-control"
-                    id="maxdate"
                     :value="fMaxDate"
                   />
                 </div>
                 <div class="col-auto">
                   <label for="status" class="form-label">Status</label>
-                  <select class="form-control" id="status" v-model="fStatus">
+                  <select id="status" v-model="fStatus" class="form-control">
                     <option></option>
                     <option>Requested</option>
                     <option>Accepted</option>
@@ -56,7 +56,7 @@ You should have received a copy of the GNU General Public License along with Fac
                 </div>
                 <div class="col-auto">
                   <label for="type" class="form-label">Type</label>
-                  <select class="form-control" id="type" v-model="fType">
+                  <select id="type" v-model="fType" class="form-control">
                     <option></option>
                     <option v-for="t in resaTypes" :value="t.id">
                       {{ t.name }}
@@ -67,22 +67,22 @@ You should have received a copy of the GNU General Public License along with Fac
                 <div class="col-auto">
                   <label for="validated" class="form-label">Validated</label>
                   <select
-                    class="form-control"
                     id="validated"
                     v-model="fValidated"
+                    class="form-control"
                   >
                     <option></option>
                     <option value="true">True</option>
                     <option value="false">False</option>
                   </select>
                 </div>
-                <div class="col-auto" v-if="displayUser">
+                <div v-if="displayUser" class="col-auto">
                   <label class="form-label" for="resa-user">User :</label>
                   <Multiselect
                     id="resa-user"
                     ref="msuser"
-                    class="form-control"
                     v-model="fUser"
+                    class="form-control"
                     placeholder="Select a user"
                     :filter-results="false"
                     :min-chars="3"
@@ -92,17 +92,17 @@ You should have received a copy of the GNU General Public License along with Fac
                     :options="findUser"
                   />
                 </div>
-                <div class="col-auto" v-if="displayProject">
+                <div v-if="displayProject" class="col-auto">
                   <label class="form-label" for="project">Project :</label>
                   <Multiselect
                     id="resa-user"
                     ref="msproject"
-                    class="form-control"
                     v-model="fProject"
+                    class="form-control"
                     placeholder="Select a project"
                     :searchable="true"
                     :options="projectsOptions"
-                    valueProp="id"
+                    value-prop="id"
                     label="name"
                   />
                 </div>
