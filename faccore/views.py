@@ -572,7 +572,7 @@ if 'django_ical' in settings.INSTALLED_APPS:
             now = timezone.now()
             wd = now.weekday()
             monday = (now - timedelta(days=wd)).replace(hour=0, minute=0, second=0)
-            resas = Reservation.objects.filter(date__gte=monday)
+            resas = Reservation.objects.filter(start_date__gte=monday)
             events = Event.objects.filter(start_date__gte=monday)
             return (list(resas) + list(events))
 
