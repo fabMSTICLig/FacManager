@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along with Fac
 @author Germain Lemasson
 """
 
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, time
 import dateutil.parser
 from collections import OrderedDict
 from django.conf import settings
@@ -35,13 +35,14 @@ from rest_framework.exceptions import ParseError
 
 import email.utils
 import json
+from json import JSONEncoder
 
-
-from .serializers import SupplySerializer, SupplyUsageSerializer, MachineModelSerializer, ManagerSerializer, MachineSerializer, AvailabilitySerializer, ReservationTypeSerializer, TrainingLevelSerializer, TrainingLevelListSerializer, ReservationSerializer, ReservationPublicSerializer, ReservationUsageSerializer, EventSerializer
-from .models import MachineModel, TrainingLevel, Supply, ReservationType, Availability, Machine, Manager, SupplyUsage, Reservation, Event
+from .serializers import SupplySerializer, SupplyUsageSerializer, MachineModelSerializer, ManagerSerializer, MachineSerializer, ReservationTypeSerializer, TrainingLevelSerializer, TrainingLevelListSerializer, ReservationSerializer, ReservationPublicSerializer, ReservationUsageSerializer, EventSerializer
+from .models import MachineModel, TrainingLevel, Supply, ReservationType, Machine, Manager, SupplyUsage, Reservation, Event
 
 from facusers.permissions import IsAdminOrReadOnly, IsAdminOrIsSelf
 from facusers.models import Project
+from .app_settings import app_settings
 
 
 class IsOwnerFilterBackend(filters.BaseFilterBackend):
@@ -216,50 +217,11 @@ class MachineViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     search_fields = ['name']
 
-
-class AvailabilityViewSet(viewsets.ModelViewSet):
-    queryset = Availability.objects.all()
-    serializer_class = AvailabilitySerializer
-    permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = [DateFilterBackend]
-
-    def create(self, request, *args, **kwargs):
-        """
-        Overload create method in order to add an occurence field
-        This allow to create multiple availability
-        If occurence=3 create two more availabilities are created
-        by adding a day between each availability
-        """
-        if(isinstance(request.data, QueryDict)):
-            data = request.data.dict()
-        else:
-            data = dict(request.data)
-        occurence = int(data.pop("occurence", 1))
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        if(occurence > 1):
-            start_date = datetime.fromisoformat(
-                request.data["start_date"])
-            end_date = datetime.fromisoformat(request.data["end_date"])
-            for i in range(1, occurence):
-                data["start_date"] = (
-                    start_date + timedelta(days=i)).isoformat()
-                data["end_date"] = (end_date + timedelta(days=i)).isoformat()
-                serializer = self.get_serializer(data=data)
-                serializer.is_valid(raise_exception=True)
-                self.perform_create(serializer)
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-
 class ReservationTypeViewSet(viewsets.ModelViewSet):
     queryset = ReservationType.objects.all()
     serializer_class = ReservationTypeSerializer
     permission_classes = (IsAdminOrReadOnly,)
     search_fields = ['name']
-
 
 class TrainingLevelView(APIView):
     """
@@ -436,8 +398,8 @@ class ReservationViewSet(viewsets.ModelViewSet):
 
 
 class RefreshResourcesView(APIView):
-    #permission_classes = [IsAdminUser]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
         staticdir = settings.STATIC_ROOT
@@ -447,13 +409,31 @@ class RefreshResourcesView(APIView):
         ress = {'machines': MachineSerializer(Machine.objects.all(), many=True).data,
                 'managers': ManagerSerializer(Manager.objects.all(), many=True).data,
                 }
-        f.write(json.dumps(ress))
+
+        class TimeEncoder(JSONEncoder):
+            #Override the default method
+            def default(self, obj):
+                if isinstance(obj, (time)):
+                    return obj.isoformat()
+
+        ress['business_hours']={'slots':app_settings.BUSINESS_HOURS}
+        mintime = time(23,59);
+        maxtime = time(0,0);
+        for slot in app_settings.BUSINESS_HOURS:
+            if(slot['start_time']<mintime):
+                mintime=slot['start_time']
+            if(slot['end_time']>maxtime):
+                maxtime=slot['end_time']
+        ress['business_hours']['min_hour']=mintime
+        ress['business_hours']['max_hour']=maxtime
+
+        f.write(json.dumps(ress, cls=TimeEncoder))
         f.close()
         ress['reservation_types'] = ReservationTypeSerializer(ReservationType.objects.all(), many=True).data
         ress['machine_models'] = MachineModelSerializer(MachineModel.objects.all(), many=True).data
         ress['supplies'] = SupplySerializer(Supply.objects.all(), many=True).data
         f = open(staticdir + "/resources.json", "w")
-        f.write(json.dumps(ress))
+        f.write(json.dumps(ress, cls=TimeEncoder))
         f.close()
         return Response(ress)
 
@@ -522,7 +502,7 @@ class UsagesView(APIView):
             except:
                 raise ParseError(detail="Wrong validated format")
 
-        queryset = queryset.defer('commentary', 'created_date', 'uses', 'manager')
+        queryset = queryset.defer('commentary', 'created_date', 'machine', 'manager')
         queryset = queryset.prefetch_related(Prefetch('reservation_type', queryset=ReservationType.objects.only('name')))
         queryset = queryset.prefetch_related(Prefetch('user', queryset=get_user_model().objects.only('first_name', 'last_name', 'username')))
         queryset = queryset.prefetch_related(Prefetch('project', queryset=Project.objects.only('name')))

@@ -1,3 +1,6 @@
+[warn] --jsx-bracket-same-line is deprecated.
+[warn] Ignored unknown option --loglevel=error. Did you mean --log-level?
+[warn] Ignored unknown option --stdin.
 <!--
 Copyright (C) 2020-2022 LIG Université Grenoble Alpes
 
@@ -15,18 +18,11 @@ You should have received a copy of the GNU General Public License along with Fac
 
 <template>
   <div class="row">
-    <div class="col-12 col-md-6">
+    <div class="col-12">
       <div class="card">
         <div class="card-header">
-          <div class="row  justify-content-between">
-            <div class="col-6">
-              <input
-                v-model="searchInput"
-                class="form-control"
-                type="search"
-                placeholder="Search"
-              >
-            </div>
+          <div class="row justify-content-between">
+            <h3 class="col-auto">Organizations</h3>
             <div class="col-auto">
               <router-link
                 class="btn btn-primary float-end"
@@ -39,29 +35,51 @@ You should have received a copy of the GNU General Public License along with Fac
           </div>
         </div>
         <div class="card-body">
+          <form class="row row-cols-lg-auto g-3 align-items-center">
+            <div class="col-12">
+              <label class="form-label visually-hidden" for="searchInput"
+                >Search</label
+              >
+              <input
+                id="searchInput"
+                v-model="searchInput"
+                class="form-control"
+                type="search"
+                placeholder="Search"
+              />
+            </div>
+          </form>
           <div class="table-responsive">
             <table class="table table-hover">
               <thead>
                 <tr>
                   <th>Type</th>
                   <th>Name</th>
+                  <th></th>
                 </tr>
               </thead>
-              <tbody>
-                <tr
-                  v-for="item in objectsList"
-                  :key="item.id"
-                  @click="selectedObject = item"
-                >
-                  <td v-text="organizationTypes[item.type]" />
+              <tbody v-if="loaded">
+                <tr v-for="item in objects" :key="item.id">
+                  <td v-text="types[item.type]" />
                   <td v-text="item.name" />
+                  <td class="text-end">
+                    <router-link
+                      class="btn btn-primary"
+                      role="button"
+                      :to="{
+                        name: 'organization',
+                        params: { orgaid: item.id },
+                      }"
+                    >
+                      Update
+                    </router-link>
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
           <pagination
-            :total-pages="pagesCount"
-            :total="objectsCount"
+            :total="totalCount"
             :per-page="perPage"
             :current-page="currentPage"
             @pagechanged="onPageChange"
@@ -69,73 +87,46 @@ You should have received a copy of the GNU General Public License along with Fac
         </div>
       </div>
     </div>
-    <div class="col-12 col-md-6">
-      <div
-        v-if="selectedObject"
-        class="card"
-      >
-        <div class="card-header">
-          <h3
-            class="float-start"
-            v-text="selectedObject.name"
-          />
-          <div
-            class="btn-group float-end"
-            role="group"
-          >
-            <router-link
-              class="btn btn-primary"
-              role="button"
-              :to="{
-                name: 'organization',
-                params: { orgaid: selectedObject.id },
-              }"
-            >
-              Update
-            </router-link>
-          </div>
-        </div>
-        <div class="card-body">
-          <p class="card-text">
-            Type : {{ organizationTypes[selectedObject.type] }}
-          </p>
-          <p class="card-text">
-            Contact : {{ selectedObject.contact }}
-          </p>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { computed, onBeforeMount } from "vue";
-import { useStore } from "vuex";
+import { ref, onBeforeMount } from "vue";
+import useDebouncedRef from "@/composables/useDebouncedRef"
+import { storeToRefs } from "pinia";
+import { useOrganizationsStore } from "@/stores/organizations";
 
-import useListFSP from "@/composables/useListFSP";
+import useSearchStorage from "@/composables/useSearchStorage";
 import Pagination from "@/components/nav/ListPagination.vue";
 
-const store = useStore();
+const store = useOrganizationsStore();
+const { objects, count: totalCount, types } = storeToRefs(store);
 
-const organizationTypes = computed(() => store.getters["organizations/types"]);
+const loaded = ref(false);
 
-const {
-  selectedObject,
-  searchInput,
+const searchInput = useDebouncedRef("");
+const currentPage = ref(1);
+const perPage = ref(parseInt(import.meta.env.VITE_APP_MAXLIST));
+
+function onPageChange(page) {
+  currentPage.value = page;
+}
+
+async function fetch(params) {
+  await store.fetchList({ ...params });
+}
+
+const { refresh } = useSearchStorage(
+  "organizations",
+  fetch,
+  { search: searchInput },
   currentPage,
-  pagesCount,
-  perPage,
-  onPageChange,
-  loadPage,
-  objectsList,
-  objectsCount,
-  fetchList,
-} = useListFSP("organizations");
+  perPage.value
+);
 
-onBeforeMount(() => {
-  store.dispatch("organizations/fetchTypes").then(() => {
-    loadPage();
-    return fetchList();
-  });
+onBeforeMount(async () => {
+  await store.fetchTypes();
+  await refresh();
+  loaded.value = true;
 });
 </script>

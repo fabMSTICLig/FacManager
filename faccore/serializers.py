@@ -17,7 +17,8 @@ from collections import OrderedDict
 from rest_framework import serializers, exceptions
 from django.contrib.auth import get_user_model
 
-from .models import MachineModel, TrainingLevel, Supply, ReservationType, Availability, Machine, Manager, SupplyUsage, Reservation, Event
+from .app_settings import app_settings
+from .models import MachineModel, TrainingLevel, Supply, ReservationType, Machine, Manager, SupplyUsage, Reservation, Event
 
 
 class ChoicesField(serializers.Field):
@@ -83,15 +84,11 @@ class MachineModelSerializer(serializers.ModelSerializer):
 
 
 class ManagerSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField(source='user.id')
+    name = serializers.ReadOnlyField(source='user.first_name')
     class Meta:
         model = Manager
-        fields = '__all__'
-
-
-class AvailabilitySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Availability
-        fields = '__all__'
+        fields = ['id', 'user', 'calendar', 'name']
 
 
 class ReservationTypeSerializer(serializers.ModelSerializer):
@@ -99,6 +96,10 @@ class ReservationTypeSerializer(serializers.ModelSerializer):
         model = ReservationType
         fields = '__all__'
 
+    def validate(self, data):
+        if(data['spe_manager']):
+            data['need_manager']=True
+        return data
 
 class TrainingLevelListSerializer(serializers.ListSerializer):
     """
@@ -158,7 +159,7 @@ class ReservationSerializer(serializers.ModelSerializer):
         start_date = data['start_date']
         request = self.context.get("request")
         end_date = data['end_date']
-        uses = data['uses']
+        machine = data['machine']
         rtype = data['reservation_type']
         # Verify that a manager used if not needed
         if(not rtype.need_manager and not data['manager'] is None):
@@ -168,42 +169,38 @@ class ReservationSerializer(serializers.ModelSerializer):
         if(rtype.need_manager and data['manager'] is None):
             raise serializers.ValidationError(
                 'One manager is needed', code='invalid')
-        # Verify that each need of the reservation type is fulfilled
-        machines_used = uses.copy()
-        for machine_model in rtype.needs.all():
-            machines_of_model = [
-                machine for machine in machine_model.instances.all()]
-            matches = [
-                machine for machine in machines_of_model if machine in machines_used]
-            if len(matches) > 1:
-                raise serializers.ValidationError(
-                    'Only one instance of ' + str(machine_model) + ' is needed', code='invalid')
-            elif len(matches) == 0:
-                raise serializers.ValidationError(
-                    'One instance of ' + str(machine_model) + ' is needed', code='invalid')
-            else:
-                machines_used.remove(matches[0])
-        # Verify that a machine is not used if not needed
-        if len(machines_used) > 0:
+        # Verify that a manager is the mandatory one
+        if(rtype.need_manager and rtype.spe_manager is not None and rtype.spe_manager != data['manager']):
             raise serializers.ValidationError(
-                'Machines ' + str(machines_used) + ' are not needed', code='invalid')
-        # Verify resources avaibilities
+                'The manager must be '+str(rtype.spe_manager), code='invalid')
+        # Verify that each need of the reservation type is fulfilled
+        if rtype.machine_model is not None:
+            if rtype.machine_model.instances.filter(pk=machine.id).first() is None:
+                raise serializers.ValidationError(
+                    'One instance of ' + str(rtype.machine_model) + ' is needed', code='invalid')
+        elif machine is not None:
+            raise serializers.ValidationError(
+                'No machines needed', code='invalid')
+        # Verify opening hours
         if request and hasattr(request, "user"):
             if not request.user.is_staff and (data['status'] != Reservation.DENIED):
-                availinter = Availability.objects.filter(start_date__lte=start_date).filter(
-                    end_date__gte=start_date).values('resources')
-                resources = [res['resources'] for res in availinter]
-
-                resources_resa = [ma.id for ma in data['uses']]
-                if(not data['manager'] is None and not data['manager'].id in resources):
+                oh = app_settings.BUSINESS_HOURS
+                wd = start_date.isoweekday()
+                td = start_date.time()
+                notin = True
+                for slot in oh:
+                    if(wd in slot['days_of_week']):
+                        notin = not (td > slot['start_time'] and td < slot['end_time'] )
+                        if not notin:
+                            break
+                if(notin):
                     raise serializers.ValidationError(
-                        'Manager ' + str(data['manager']) + " is not available", code='invalid')
-                missing = [r for r in resources_resa if not r in resources]
-                if(len(missing) > 0):
-                    machine_names = [
-                        m.name for m in Machine.objects.filter(pk__in=missing)]
-                    raise serializers.ValidationError(str(','.join(machine_names)) + (
-                        " is" if len(machine_names) == 1 else " are") + " not available", code='invalid')
+                        "Must be in openning hours", code='invalid')
+        if not request.user.is_staff and Event.objects.filter(closing=True,
+                start_date__lt=start_date,
+                end_date__gt=start_date).count() > 0:
+                raise serializers.ValidationError(
+                    "Closed due to an event", code='invalid')
 
         # Verify that this reservation (if not denied) is not in conflit of an other accepted reservation
         if(data['status'] != Reservation.DENIED):
@@ -222,10 +219,9 @@ class ReservationSerializer(serializers.ModelSerializer):
                     if resa.manager != None and resa.manager == data['manager']:
                         raise serializers.ValidationError(
                             str(resa.manager) + " is not available", code='conflict')
-                    for machine in resa.uses.all():
-                        if machine in uses:
-                            raise serializers.ValidationError(
-                                'Conflict using resource ' + str(machine), code='conflict')
+                    if resa.machine != None and resa.machine == data['machine']:
+                        raise serializers.ValidationError(
+                            str(resa.machine) + " is not available", code='conflict')
         return data
 
 
@@ -251,7 +247,7 @@ class ReservationUsageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Reservation
-        exclude = ['commentary', 'created_date', 'uses', 'manager']
+        exclude = ['commentary', 'created_date', 'machine', 'manager']
 
     def get_duration(self, obj):
         td = obj.end_date - obj.start_date

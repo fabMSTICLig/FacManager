@@ -30,18 +30,18 @@ You should have received a copy of the GNU General Public License along with Fac
                   <label for="mindate" class="form-label">Min Date</label>
                   <input
                     id="mindate"
+                    v-model="fMinDate"
                     type="date"
                     class="form-control"
-                    :value="fMinDate"
                   />
                 </div>
                 <div class="col-auto">
                   <label for="maxdate" class="form-label">Max Date</label>
                   <input
                     id="maxdate"
+                    v-model="fMaxDate"
                     type="date"
                     class="form-control"
-                    :value="fMaxDate"
                   />
                 </div>
                 <div class="col-auto">
@@ -58,7 +58,7 @@ You should have received a copy of the GNU General Public License along with Fac
                   <label for="type" class="form-label">Type</label>
                   <select id="type" v-model="fType" class="form-control">
                     <option></option>
-                    <option v-for="t in resaTypes" :value="t.id">
+                    <option v-for="t in resaTypes" :key="t.id" :value="t.id">
                       {{ t.name }}
                     </option>
                   </select>
@@ -132,13 +132,13 @@ You should have received a copy of the GNU General Public License along with Fac
               </tr>
             </thead>
             <tbody>
-              <template v-for="rtype in reservations">
+              <template v-for="rtype in reservations" :key="rtype.id">
                 <tr>
                   <th>{{ rtype.name }}</th>
                   <th>{{ rtype.total }}</th>
                   <th colspan="3"></th>
                 </tr>
-                <tr v-for="resa in rtype.usages">
+                <tr v-for="resa in rtype.usages" :key="resa.id">
                   <td>{{ formatDate(resa.start_date) }}</td>
                   <td>{{ resa.duration }}</td>
                   <td>{{ resa.status }}</td>
@@ -162,13 +162,13 @@ You should have received a copy of the GNU General Public License along with Fac
               </tr>
             </thead>
             <tbody>
-              <template v-for="supply in supplyUsages">
+              <template v-for="supply in supplyUsages" :key="supply.id">
                 <tr>
                   <th>{{ supply.name }}</th>
                   <th>{{ supply.total + " " + supply.unit }}</th>
                   <th colspan="3"></th>
                 </tr>
-                <tr v-for="su in supply.usages">
+                <tr v-for="su in supply.usages" :key="su.id">
                   <td>{{ formatDate(resadict[su.reservation].start_date) }}</td>
                   <td>{{ su.quantity + " " + supply.unit }}</td>
                   <td>
@@ -200,17 +200,28 @@ You should have received a copy of the GNU General Public License along with Fac
 </template>
 
 <script setup>
-import { ref, computed, watch, onBeforeMount } from "vue";
-import { useStore } from "vuex";
+import { ref, onBeforeMount } from "vue";
 import { useRoute } from "vue-router";
+import { storeToRefs } from "pinia";
 import spacetime from "spacetime";
-import ApiService from "@/common/api.service";
+import ApiService from "@/commons/api.service";
 import Multiselect from "@vueform/multiselect";
 
-const store = useStore();
+import { useAuthStore } from "@/stores/auth";
+import { useUsersStore } from "@/stores/users";
+import { useReservationTypesStore } from "@/stores/reservations";
+import { useProjectsStore } from "@/stores/projects";
+import { useResourcesStore } from "@/stores/resources";
+
+const authStore = useAuthStore();
+const usersStore = useUsersStore();
+const reservationTypesStore = useReservationTypesStore();
+const projectsStore = useProjectsStore();
+const resourcesStore = useResourcesStore();
+
 const route = useRoute();
 
-let title = "Usages"
+let title = "Usages";
 const reservations = ref({});
 let resadict = {};
 const supplyUsages = ref({});
@@ -223,12 +234,12 @@ const displayProject = ref(true);
 const fProject = ref(null);
 const fUser = ref(null);
 const fMinDate = ref(
-  spacetime(new Date(new Date().getFullYear(), 0, 1)).format(
+  ""+spacetime(new Date(new Date().getFullYear(), 0, 1)).format(
     "{year}-{iso-month}-{date-pad}"
   )
 );
 const fMaxDate = ref(
-  spacetime(new Date(new Date().getFullYear(), 11, 31)).format(
+  ""+spacetime(new Date(new Date().getFullYear(), 11, 31)).format(
     "{year}-{iso-month}-{date-pad}"
   )
 );
@@ -236,13 +247,13 @@ const fType = ref(null);
 const fStatus = ref(null);
 const fValidated = ref(null);
 
-const resaTypes = computed(() => store.getters["reservation_types/list"]);
-const projectsOptions = computed(() => store.getters["projects/list"]);
+const { objects:resaTypes} =storeToRefs(reservationTypesStore);
+const { objects:projectsOptions} =storeToRefs(projectsStore);
 
 async function findUser(query) {
-  let users = await store.dispatch("users/fetchList", {
-    params: { search: query },
-  });
+  let users = await usersStore.fetchList(
+    { search: query }
+  );
   return users.map((u) => {
     return {
       label: "@" + u.username + " " + u.first_name + " " + u.last_name,
@@ -270,7 +281,7 @@ async function fetchUsages() {
   loaded.value = false;
   const { data } = await ApiService.query("/usages", params);
   reservations.value = data.reservations;
-  for (let [key, value] of Object.entries(data.reservations)) {
+  for (let value of Object.values(data.reservations)) {
     Object.assign(resadict, value.usages);
   }
   supplyUsages.value = data.supplies;
@@ -280,22 +291,20 @@ async function fetchUsages() {
 }
 
 onBeforeMount(async () => {
-  await store.dispatch("resources/fetchResources");
-  if (route.name != "projectusages") store.dispatch("projects/fetchList");
+  await resourcesStore.fetchResources();
+  if (route.name != "projectusages") projectsStore.fetchList();
   else {
     displayProject.value = false;
     fProject.value = route.params[route.meta.routeparam];
   }
   if (route.name == "myusages") {
-    title="My Usages"
+    title = "My Usages";
     displayUser.value = false;
-    fUser.value = store.getters.authUser.id;
-  }
-  else if (route.name == "userusages") {
+    fUser.value = authStore.authUser.id;
+  } else if (route.name == "userusages") {
     displayUser.value = false;
     fUser.value = route.params[route.meta.routeparam];
   }
-
 });
 </script>
 <style>

@@ -1,18 +1,3 @@
-<!--
-Copyright (C) 2020-2022 LIG Université Grenoble Alpes
-
-
-This file is part of FacManager.
-
-FacManager is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-
-FacManager is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with FacManager. If not, see <https://www.gnu.org/licenses/>
-
-@author Germain Lemasson
--->
-
 <template>
   <div>
     <div v-if="!readonly">
@@ -27,7 +12,7 @@ You should have received a copy of the GNU General Public License along with Fac
           label="name"
           mode="multiple"
           :options="fetchOptions"
-          :loading="optionsLoading"
+          :loaing="optionsLoading"
           :clear-on-select="!isArray"
           :close-on-select="!isArray"
           :filter-results="false"
@@ -67,18 +52,15 @@ You should have received a copy of the GNU General Public License along with Fac
 </template>
 
 <script setup>
-import { ref, computed, onMounted, defineProps, defineEmits } from "vue";
-import { useStore } from "vuex";
+import { ref, computed, onMounted } from "vue";
 
 import Multiselect from "@vueform/multiselect";
-
-const store = useStore();
 
 const emit = defineEmits(["update:modelValue"]);
 
 const props = defineProps({
-  ressource: {
-    type: [String, Array],
+  resource: {
+    type: [Function, Array],
     required: true,
   },
   modelValue: {
@@ -99,14 +81,12 @@ const props = defineProps({
 const mtselect = ref();
 const valuesIntern = ref([]);
 const optionsLoading = ref(false);
-const isArray = computed(() => Array.isArray(props.ressource));
+const isArray = computed(() => Array.isArray(props.resource));
 onMounted(async () => {
   if (!isArray.value) {
-    valuesIntern.value = await store.dispatch(props.ressource + "/fetchList", {
-      params: { ids: props.modelValue.join(",") },
-    });
+    valuesIntern.value = await props.resource({ ids: props.modelValue.join(",") });
   } else {
-    valuesIntern.value = props.ressource.filter((o) =>
+    valuesIntern.value = props.resource.filter((o) =>
       props.modelValue.includes(o.id)
     );
   }
@@ -118,15 +98,13 @@ function multipleLabel() {
 
 async function fetchOptions(query) {
   let data = [];
-  if (Array.isArray(props.ressource)) {
+  if (Array.isArray(props.resource)) {
     if (query == null) query = "";
-    data = props.ressource.filter((o) => o.name.includes(query));
+    data = props.resource.filter((o) => o.name.includes(query));
   } else {
     if (query) {
       optionsLoading.value = true;
-      data = await store.dispatch(props.ressource + "/fetchList", {
-        params: { search: query },
-      });
+      data = await props.resource({ search: query });
       optionsLoading.value = false;
     }
   }

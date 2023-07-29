@@ -32,5 +32,4 @@ You should have received a copy of the GNU General Public License along with Fac
 </template>
 
 <script setup>
-const publicPath = import.meta.env.BASE_URL;
 </script>

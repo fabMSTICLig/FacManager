@@ -17,9 +17,11 @@ You should have received a copy of the GNU General Public License along with Fac
   <div class="row">
     <div class="col-12">
       <div v-if="object" class="card">
-        <div class="card-header">
-          <h3 class="float-start">{{ cardName }}</h3>
-          <div class="btn-group float-end" role="group">
+        <div class="card-header row justify-content-between">
+          <h3 class="col-auto">
+            Users: <strong>{{ cardName }}</strong>
+          </h3>
+          <div class="col-auto btn-group float-end" role="group">
             <router-link
               class="btn btn-primary"
               role="button"
@@ -29,7 +31,16 @@ You should have received a copy of the GNU General Public License along with Fac
               }"
             >
               Usages
-            </router-link></div>
+            </router-link>
+            <button
+              v-if="!isNew"
+              class="btn btn-danger"
+              type="button"
+              @click.prevent="destroy()"
+            >
+              Delete
+            </button>
+          </div>
         </div>
         <div class="card-body">
           <form ref="editorForm" class="row g-3">
@@ -102,7 +113,7 @@ You should have received a copy of the GNU General Public License along with Fac
                     <div class="mb-3">
                       <DynList
                         v-model="object.organizations"
-                        ressource="organizations"
+                        :resource="fetchOrganizations"
                       />
                     </div>
                   </fieldset>
@@ -111,7 +122,10 @@ You should have received a copy of the GNU General Public License along with Fac
                   <fieldset>
                     <legend>Projects</legend>
                     <div class="mb-3">
-                      <DynList v-model="object.projects" ressource="projects" />
+                      <DynList
+                        v-model="object.projects"
+                        :resource="fetchProjects"
+                      />
                     </div>
                   </fieldset>
                 </div>
@@ -138,7 +152,7 @@ You should have received a copy of the GNU General Public License along with Fac
                         :key="tl.machine_model"
                       >
                         <td>
-                          {{ machineModelName(tl.machine_model) }}
+                          {{ machineModels[tl.machine_model].name }}
                         </td>
                         <td>
                           <input
@@ -185,12 +199,11 @@ You should have received a copy of the GNU General Public License along with Fac
                   Update
                 </button>
                 <button
-                  v-if="!isNew"
-                  class="btn btn-danger"
+                  class="btn btn-secondary"
                   type="button"
-                  @click="destroy"
+                  @click.prevent="cancel"
                 >
-                  Delete
+                  Cancel
                 </button>
               </div>
             </div>
@@ -204,55 +217,65 @@ You should have received a copy of the GNU General Public License along with Fac
 <script setup>
 import { computed, ref, onBeforeMount } from "vue";
 import { useRoute } from "vue-router";
-import { useStore } from "vuex";
 
 import useEditor from "@/composables/useEditor";
 
+import { useUsersStore } from "@/stores/users";
+import { useOrganizationsStore } from "@/stores/organizations";
+import { useProjectsStore } from "@/stores/projects";
+import { useTrainingLevelsStore } from "@/stores/traininglevels";
+import { useMachineModelsStore } from "@/stores/machines";
+import { useResourcesStore } from "@/stores/resources";
+
 import DynList from "@/components/ui/DynList.vue";
 
-const store = useStore();
-const { editorForm, object, isNew, initObject, create, update, destroy } =
-  useEditor(
-    "users",
-    {
-      username: "",
-      first_name: "",
-      last_name: "",
-      email: "",
-      organizations: [],
-      projects: [],
-    },
-    "User"
-  );
+const { fetchList: fetchOrganizations } = useOrganizationsStore();
+const { fetchList: fetchProjects } = useProjectsStore();
+const store = useUsersStore();
+
+const tlStore = useTrainingLevelsStore();
+
+const {
+  editorForm,
+  object,
+  isNew,
+  initObject,
+  create,
+  update,
+  destroy,
+  cancel,
+} = useEditor(
+  store,
+  {
+    username: "",
+    first_name: "",
+    last_name: "",
+    email: "",
+    users: [],
+  },
+  { name: "users" }
+);
 
 const cardName = computed(() =>
   isNew.value ? "Nouvel Utilisateur" : object.value.username
 );
 
 const userTrainingLevels = ref([]);
-function machineModelName(id) {
-  let mm = store.getters["machine_models/byId"](id);
-  if (mm) return mm.name;
-  else return "";
-}
+
+const { objects: machineModels } = useMachineModelsStore();
 
 function updateTLs() {
-  store.dispatch("training_levels/bulkUpdate", {
-    tls: userTrainingLevels.value,
-    userid: object.value.id,
-  });
+  tlStore.bulkUpdate(object.value.id, userTrainingLevels.value);
 }
 
 const route = useRoute();
 
 onBeforeMount(async () => {
-  await store.dispatch("resources/fetchResources");
+  await useResourcesStore().fetchResources();
   await initObject(route);
 
   if (object.value.id) {
-    const data = await store.dispatch("training_levels/fetchList", {
-      prefix: "/users/" + object.value.id + "/",
-    });
+    const data = await tlStore.fetchList({}, "/users/" + object.value.id + "/");
 
     userTrainingLevels.value = data;
   }

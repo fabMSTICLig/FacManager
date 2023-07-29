@@ -1,18 +1,3 @@
-<!--
-Copyright (C) 2020-2022 LIG Université Grenoble Alpes
-
-
-This file is part of FacManager.
-
-FacManager is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-
-FacManager is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with FacManager. If not, see <https://www.gnu.org/licenses/>
-
-@author Germain Lemasson
--->
-
 <template>
   <div v-if="show">
     <div class="modal-backdrop show" />
@@ -25,32 +10,24 @@ You should have received a copy of the GNU General Public License along with Fac
     >
       <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
-          <div
-            v-if="!hideHeader"
-            class="modal-header"
-          >
+          <div v-if="!hideHeader" class="modal-header">
             <h5 class="modal-title">
               {{ title }}
             </h5>
             <button
               type="button"
-              class="btn btn-danger"
-              data-dismiss="modal"
+              class="btn-close"
+              data-bs-dismiss="modal"
               aria-label="Close"
               @click.prevent="handleClose()"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
+            ></button>
           </div>
           <div class="modal-body">
             <slot>
               <p>{{ content }}</p>
             </slot>
           </div>
-          <div
-            v-if="!hideFooter"
-            class="modal-footer"
-          >
+          <div v-if="!hideFooter" class="modal-footer">
             <button
               v-if="!confirmFooter"
               type="button"

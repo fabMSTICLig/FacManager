@@ -15,18 +15,11 @@ You should have received a copy of the GNU General Public License along with Fac
 
 <template>
   <div class="row">
-    <div class="col-12 col-md-6">
+    <div class="col-12">
       <div class="card">
         <div class="card-header">
           <div class="row justify-content-between">
-            <div class="col-6">
-              <input
-                v-model="searchInput"
-                class="form-control"
-                type="search"
-                placeholder="Search"
-              />
-            </div>
+            <h3 class="col-auto">Reservation Types</h3>
             <div class="col-auto">
               <router-link
                 class="btn btn-primary float-end"
@@ -39,27 +32,58 @@ You should have received a copy of the GNU General Public License along with Fac
           </div>
         </div>
         <div class="card-body">
+          <form class="row row-cols-lg-auto g-3 align-items-center">
+            <div class="col-12">
+              <label class="form-label visually-hidden" for="searchInput"
+                >Search</label
+              >
+              <input
+                id="searchInput"
+                v-model="searchInput"
+                class="form-control"
+                type="search"
+                placeholder="Search"
+              />
+            </div>
+          </form>
           <div class="table-responsive">
             <table class="table table-hover">
               <thead>
                 <tr>
                   <th>Name</th>
+                  <th>Need manager</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
-                <tr
-                  v-for="item in objectsList"
-                  :key="item.id"
-                  @click="selectedObject = item"
-                >
+                <tr v-for="item in objects" :key="item.id">
                   <td v-text="item.name" />
+                  <td>
+                    <svg v-show="item.need_manager" class="svg-icon">
+                      <use href="#check" />
+                    </svg>
+                    <svg v-show="!item.need_manager" class="svg-icon">
+                      <use href="#cross" />
+                    </svg>
+                  </td>
+                  <td class="text-end">
+                    <router-link
+                      class="btn btn-primary"
+                      role="button"
+                      :to="{
+                        name: 'resatype',
+                        params: { resatypeid: item.id },
+                      }"
+                    >
+                      Update
+                    </router-link>
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
           <pagination
-            :total-pages="pagesCount"
-            :total="objectsCount"
+            :total="totalCount"
             :per-page="perPage"
             :current-page="currentPage"
             @pagechanged="onPageChange"
@@ -67,80 +91,44 @@ You should have received a copy of the GNU General Public License along with Fac
         </div>
       </div>
     </div>
-    <div class="col-12 col-md-6">
-      <div v-if="selectedObject" class="card">
-        <div class="card-header">
-          <h3 class="float-start" v-text="selectedObject.name" />
-          <div class="btn-group float-end" role="group">
-            <router-link
-              class="btn btn-primary"
-              role="button"
-              :to="{
-                name: 'resatype',
-                params: { resatypeid: selectedObject.id },
-              }"
-            >
-              Update
-            </router-link>
-          </div>
-        </div>
-        <div class="card-body">
-          <p class="card-text">
-            {{ selectedObject.description }}
-          </p>
-          <p class="card-text">
-            Need manager :
-            <svg v-show="selectedObject.need_manager" class="svg-icon">
-              <use href="#check" />
-            </svg>
-            <svg v-show="!selectedObject.need_manager" class="svg-icon">
-              <use href="#cross" />
-            </svg>
-          </p>
-          <h5>Need machines</h5>
-          <DisplayIdList :items="selectedNeeds" />
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { watch, computed, onBeforeMount } from "vue";
-import { useStore } from "vuex";
+import { ref, onBeforeMount } from "vue";
+import useDebouncedRef from "@/composables/useDebouncedRef"
+import { storeToRefs } from "pinia";
+import { useReservationTypesStore } from "@/stores/reservations";
 
-import useListFSP from "@/composables/useListFSP";
+import useSearchStorage from "@/composables/useSearchStorage";
 import Pagination from "@/components/nav/ListPagination.vue";
-import DisplayIdList from "@/components/ui/DisplayIdList.vue";
 
-const store = useStore();
+const store = useReservationTypesStore();
+const { objects, count: totalCount } = storeToRefs(store);
 
-const selectedNeeds = computed(() => store.getters["machine_models/list"]);
+const loaded = ref(false);
+const searchInput = useDebouncedRef("");
+const currentPage = ref(1);
+const perPage = ref(parseInt(import.meta.env.VITE_APP_MAXLIST));
 
-const {
-  selectedObject,
-  searchInput,
+function onPageChange(page) {
+  currentPage.value = page;
+}
+
+async function fetch(params) {
+  await store.fetchList({ ...params });
+}
+
+const { refresh } = useSearchStorage(
+  "resatypes",
+  fetch,
+  { search: searchInput },
   currentPage,
-  pagesCount,
-  perPage,
-  onPageChange,
-  loadPage,
-  objectsList,
-  objectsCount,
-  fetchList,
-} = useListFSP("reservation_types");
+  perPage.value
+);
 
-watch(selectedObject, () => {
-  if (selectedObject.value) {
-    if (selectedObject.value.needs)
-      store.dispatch("machine_models/fetchList", {
-        params: { ids: selectedObject.value.needs.join(",") },
-      });
-  }
-});
-
-onBeforeMount(() => {
-  loadPage();
-  return fetchList();
+onBeforeMount(async () => {
+  await refresh();
+  loaded.value = true;
 });
 </script>

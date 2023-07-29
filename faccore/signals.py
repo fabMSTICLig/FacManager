@@ -28,9 +28,7 @@ def build_reservation_on_machinmodel_creation(sender, instance, created, **kwarg
     and a traininglevel is created for each user
     """
     if created:
-        res = ReservationType(name=instance.name)
-        res.save()
-        res.needs.add(instance)
+        res = ReservationType(name=instance.name, machine_model=instance)
         res.save()
         tls = []
         for user in get_user_model().objects.all():

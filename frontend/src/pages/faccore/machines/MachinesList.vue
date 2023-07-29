@@ -1,3 +1,6 @@
+[warn] --jsx-bracket-same-line is deprecated.
+[warn] Ignored unknown option --loglevel=error. Did you mean --log-level?
+[warn] Ignored unknown option --stdin.
 <!--
 Copyright (C) 2020-2022 LIG Université Grenoble Alpes
 
@@ -15,18 +18,11 @@ You should have received a copy of the GNU General Public License along with Fac
 
 <template>
   <div class="row">
-    <div class="col-12 col-md-6">
+    <div class="col-12">
       <div class="card">
         <div class="card-header">
-          <div class="row  justify-content-between">
-            <div class="col-6">
-              <input
-                v-model="searchInput"
-                class="form-control"
-                type="search"
-                placeholder="Search"
-              >
-            </div>
+          <div class="row justify-content-between">
+            <h3 class="col-auto">Machines</h3>
             <div class="col-auto">
               <router-link
                 class="btn btn-primary float-end"
@@ -39,27 +35,49 @@ You should have received a copy of the GNU General Public License along with Fac
           </div>
         </div>
         <div class="card-body">
+          <form class="row row-cols-lg-auto g-3 align-items-center">
+            <div class="col-12">
+              <label class="form-label visually-hidden" for="searchInput"
+                >Search</label
+              >
+              <input
+                id="searchInput"
+                v-model="searchInput"
+                class="form-control"
+                type="search"
+                placeholder="Search"
+              />
+            </div>
+          </form>
           <div class="table-responsive">
             <table class="table table-hover">
               <thead>
                 <tr>
                   <th>Name</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
-                <tr
-                  v-for="item in objectsList"
-                  :key="item.id"
-                  @click="selectedObject = item"
-                >
+                <tr v-for="item in objects" :key="item.id">
                   <td v-text="item.name" />
+                  <td class="text-end">
+                    <router-link
+                      class="btn btn-primary"
+                      role="button"
+                      :to="{
+                        name: 'machine',
+                        params: { machineid: item.id },
+                      }"
+                    >
+                      Update
+                    </router-link>
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
           <pagination
-            :total-pages="pagesCount"
-            :total="objectsCount"
+            :total="totalCount"
             :per-page="perPage"
             :current-page="currentPage"
             @pagechanged="onPageChange"
@@ -67,69 +85,44 @@ You should have received a copy of the GNU General Public License along with Fac
         </div>
       </div>
     </div>
-    <div class="col-12 col-md-6">
-      <div
-        v-if="selectedObject"
-        class="card"
-      >
-        <div class="card-header">
-          <h3
-            class="float-start"
-            v-text="selectedObject.name"
-          />
-          <div
-            class="btn-group float-end"
-            role="group"
-          >
-            <router-link
-              class="btn btn-primary"
-              role="button"
-              :to="{
-                name: 'machine',
-                params: { machineid: selectedObject.id },
-              }"
-            >
-              Update
-            </router-link>
-          </div>
-        </div>
-        <div class="card-body">
-          <p class="card-text">
-            {{ selectedObject.description }}
-          </p>
-          <h5>Instances</h5>
-          <DisplayIdList :items="selectedObject.instances" />
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { computed, onBeforeMount } from "vue";
-import { useStore } from "vuex";
+import { ref, onBeforeMount } from "vue";
+import useDebouncedRef from "@/composables/useDebouncedRef"
+import { storeToRefs } from "pinia";
+import { useMachineModelsStore } from "@/stores/machines";
 
-import useListFSP from "@/composables/useListFSP";
+import useSearchStorage from "@/composables/useSearchStorage";
 import Pagination from "@/components/nav/ListPagination.vue";
-import DisplayIdList from "@/components/ui/DisplayIdList.vue";
 
-const store = useStore();
+const store = useMachineModelsStore();
+const { objects, count: totalCount } = storeToRefs(store);
 
-const {
-  selectedObject,
-  searchInput,
+const loaded = ref(false);
+const searchInput = useDebouncedRef("");
+const currentPage = ref(1);
+const perPage = ref(parseInt(import.meta.env.VITE_APP_MAXLIST));
+
+function onPageChange(page) {
+  currentPage.value = page;
+}
+
+async function fetch(params) {
+  await store.fetchList({ ...params });
+}
+
+const { refresh } = useSearchStorage(
+  "machine_models",
+  fetch,
+  { search: searchInput },
   currentPage,
-  pagesCount,
-  perPage,
-  onPageChange,
-  loadPage,
-  objectsList,
-  objectsCount,
-  fetchList,
-} = useListFSP("machine_models");
+  perPage.value
+);
 
-onBeforeMount(() => {
-    loadPage();
-    return fetchList();
+onBeforeMount(async () => {
+  await refresh();
+  loaded.value = true;
 });
 </script>

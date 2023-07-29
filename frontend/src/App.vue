@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License along with Fac
 
 <template>
   <div class="container-fluid">
-    <div v-if="loaded">
+    <div v-if="firstCheck">
       <Header />
       <router-view class="mr-5 ml-5" />
       <Footer />
@@ -80,58 +80,21 @@ You should have received a copy of the GNU General Public License along with Fac
 </template>
 
 <script setup>
-import { useStore } from "vuex";
+import { ref, onMounted } from "vue";
 import Modal from "@/plugins/modal";
 import Header from "@/components/AppHeader.vue";
 import Footer from "@/components/AppFooter.vue";
 
-import { ref, onMounted } from "vue";
+import { storeToRefs } from "pinia";
+import { useAuthStore } from "@/stores/auth";
 
-const loaded = ref(false);
+const store = useAuthStore();
+const { firstCheck} = storeToRefs(store);
+
+
 const showCookie = ref(false);
-const store = useStore();
 onMounted(async () => {
   document.title = import.meta.env.VITE_APP_TITLE;
-  try {
-    if (store.getters.isAuthenticated) {
-      console.log("connected");
-      const usersPromise = import("./store/users.module");
-      const organizationsPromise = import("./store/organizations.module");
-      const suppliesPromise = import("./store/supplies.module");
-      const projectsPromise = import("./store/projects.module");
-      const machinesPromise = import("./store/machines.module");
-      const availabilitiesPromise = import("./store/availabilities.module");
-      const trainingLevelsPromise = import("./store/traininglevels.module");
-
-      const users = await usersPromise;
-      const organizations = await organizationsPromise;
-      const supplies = await suppliesPromise;
-      const projects = await projectsPromise;
-      const machines = await machinesPromise;
-      const availabilities = await availabilitiesPromise;
-      const trainingLevels = await trainingLevelsPromise;
-
-      store.registerModule("users", users.default);
-      store.registerModule("organizations", organizations.default);
-      store.registerModule("projects", projects.default);
-      store.registerModule("availabilities", availabilities.default);
-      store.registerModule("training_levels", trainingLevels.default);
-
-      store.registerModule("supplies", supplies.supplies);
-      store.registerModule("supply_usages", supplies.supply_usages);
-
-      store.registerModule("machine_models", machines.machine_models);
-
-      await store.dispatch("training_levels/fetchList", {
-        prefix: "/users/" + store.getters.authUser.id + "/",
-      });
-    }
-  } catch (e) {
-    console.log(e);
-  } finally {
-    loaded.value = true;
-  }
-
   if (localStorage.getItem("cookiepopup") == null) {
     showCookie.value = true;
   }

@@ -1,46 +1,25 @@
-<!--
-Copyright (C) 2020-2022 LIG Université Grenoble Alpes
-
-
-This file is part of FacManager.
-
-FacManager is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-
-FacManager is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with FacManager. If not, see <https://www.gnu.org/licenses/>
-
-@author Germain Lemasson
--->
-
 <!-- Component inspired from https://alligator.io/vuejs/vue-pagination-component/ -->
 <template>
   <!--<nav v-if="!(isInFirstPage && isInLastPage) && totalPages != 0">-->
   <nav>
     <ul class="pagination">
-      <li
-        class="page-item"
-        :class="{ disabled: isInFirstPage }"
-      >
+      <li class="page-item" :class="{ disabled: isInFirstPage }">
         <button
           class="page-link"
           aria-label="Go to first page"
           @click="onClickFirstPage"
         >
-          First
+          Premier
         </button>
       </li>
 
-      <li
-        class="page-item"
-        :class="{ disabled: isInFirstPage }"
-      >
+      <li class="page-item" :class="{ disabled: isInFirstPage }">
         <button
           class="page-link"
           aria-label="Go to previous page"
           @click="onClickPreviousPage"
         >
-          Previous
+          Précédent
         </button>
       </li>
 
@@ -59,45 +38,35 @@ You should have received a copy of the GNU General Public License along with Fac
         </button>
       </li>
 
-      <li
-        class="page-item"
-        :class="{ disabled: isInLastPage }"
-      >
+      <li class="page-item" :class="{ disabled: isInLastPage }">
         <button
           class="page-link"
           aria-label="Go to next page"
           @click="onClickNextPage"
         >
-          Next
+          Suivant
         </button>
       </li>
 
-      <li
-        class="page-item"
-        :class="{ disabled: isInLastPage }"
-      >
+      <li class="page-item" :class="{ disabled: isInLastPage }">
         <button
           class="page-link"
           aria-label="Go to last page"
           @click="onClickLastPage"
         >
-          Last
+          Dernier
         </button>
       </li>
     </ul>
   </nav>
 </template>
 <script setup>
-import { computed, defineProps, defineEmits } from "vue";
+import { computed } from "vue";
 const props = defineProps({
   maxVisibleButtons: {
     type: Number,
     required: false,
     default: 3,
-  },
-  totalPages: {
-    type: Number,
-    required: true,
   },
   total: {
     type: Number,
@@ -113,13 +82,18 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(["pagechanged"]);
+
+const totalPages = computed(() => {
+  return Math.ceil(props.total / props.perPage);
+});
+
 const startPage = computed(() => {
   if (props.currentPage === 1) {
     return 1;
   }
 
-  if (props.currentPage === props.totalPages) {
-    return Math.max(props.totalPages - props.maxVisibleButtons + 1, 1);
+  if (props.currentPage === totalPages.value) {
+    return Math.max(totalPages.value - props.maxVisibleButtons + 1, 1);
   }
 
   return props.currentPage - 1;
@@ -127,7 +101,7 @@ const startPage = computed(() => {
 const endPage = computed(() => {
   return Math.min(
     startPage.value + props.maxVisibleButtons - 1,
-    props.totalPages
+    totalPages.value
   );
 });
 const pages = computed(() => {
@@ -145,7 +119,7 @@ const isInFirstPage = computed(() => {
   return props.currentPage <= 1;
 });
 const isInLastPage = computed(() => {
-  return props.currentPage >= props.totalPages;
+  return props.currentPage >= totalPages.value;
 });
 function onClickFirstPage() {
   emit("pagechanged", 1);
@@ -160,7 +134,7 @@ function onClickNextPage() {
   emit("pagechanged", props.currentPage + 1);
 }
 function onClickLastPage() {
-  emit("pagechanged", props.totalPages);
+  emit("pagechanged", totalPages.value);
 }
 function isPageActive(page) {
   return props.currentPage === page;

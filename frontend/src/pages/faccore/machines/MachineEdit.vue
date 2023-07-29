@@ -17,12 +17,24 @@ You should have received a copy of the GNU General Public License along with Fac
   <div class="row">
     <div class="col-12">
       <div v-if="object" class="card">
-        <div class="card-header">
-          <h3 v-text="cardName" />
+        <div class="card-header row justify-content-between">
+          <h3 class="col-auto">
+            Machines: <strong>{{ cardName }}</strong>
+          </h3>
+          <div class="col-auto btn-group float-end" role="group">
+            <button
+              v-if="!isNew"
+              class="btn btn-danger"
+              type="button"
+              @click.prevent="destroy()"
+            >
+              Delete
+            </button>
+          </div>
         </div>
         <div class="card-body">
           <div class="row">
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-6">
               <form ref="editorForm" class="row g-3">
                 <fieldset>
                   <legend>Informations</legend>
@@ -45,8 +57,8 @@ You should have received a copy of the GNU General Public License along with Fac
                       rows="5"
                       class="form-control"
                     />
-                    </div>
-                    <div class="mb-3">
+                  </div>
+                  <div class="mb-3">
                     <label class="form-label" for="diplay">Display order</label
                     ><input
                       id="display"
@@ -57,15 +69,103 @@ You should have received a copy of the GNU General Public License along with Fac
                       required
                     />
                   </div>
-
                 </fieldset>
               </form>
+            </div>
+            <div class="col-12 col-md-6">
+              <div v-if="!isNew" class="mb-3">
+                <form
+                  ref="addForm"
+                  class="needs-validation"
+                  @submit.prevent="addInstance"
+                >
+                  <div class="input-group has-validation">
+                    <span class="input-group-text">Add</span>
+                    <input
+                      v-model="newInstanceName"
+                      class="form-control"
+                      :class="{ 'is-invalid': newInstanceError }"
+                      required
+                      @input="newInstanceError = false"
+                    />
+                    <button class="btn btn-primary" type="submit">
+                      Validate
+                    </button>
+                    <div class="invalid-feedback">
+                      An instance already have this name.
+                    </div>
+                  </div>
+                </form>
+                <ul class="list-group">
+                  <li
+                    v-for="item in object.instances"
+                    :key="item.id"
+                    class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                    :class="{
+                      active:
+                        selectedInstance && item.id == selectedInstance.id,
+                    }"
+                    @click="selectInstance(item)"
+                  >
+                    <span>
+                      {{ item.name }}
+                    </span>
+                    <button
+                      class="btn btn-danger"
+                      type="button"
+                      @click.stop="removeInstance(item)"
+                    >
+                      X
+                    </button>
+                  </li>
+                </ul>
+              </div>
+              <modal
+                id="modal-instance"
+                :show="selectedInstance != null"
+                :resolve="
+                  () => {
+                    selectedInstance = null;
+                  }
+                "
+                title="Instance"
+                hide-footer
+              >
+                <form class="row g-3" @submit.prevent="updateInstance">
+                  <div class="mb-3">
+                    <label class="form-label" for="nameI">Name</label
+                    ><input
+                      id="nameI"
+                      v-model="selectedInstance.name"
+                      class="form-control"
+                      type="text"
+                      required
+                    />
+                  </div>
+                  <div class="col-12">
+                    <div class="btn-group float-end" role="group">
+                      <button class="btn btn-primary" type="submit">
+                        Update
+                      </button>
+                      <button
+                        class="btn btn-secondary"
+                        type="button"
+                        @click.prevent="selectedInstance = null"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </modal>
+            </div>
+            <div class="col-12">
               <div class="btn-group" role="group">
                 <button
                   v-if="isNew"
                   class="btn btn-primary"
                   type="button"
-                  @click="create"
+                  @click="create(false)"
                 >
                   Add
                 </button>
@@ -73,89 +173,17 @@ You should have received a copy of the GNU General Public License along with Fac
                   v-if="!isNew"
                   class="btn btn-primary"
                   type="button"
-                  @click="update(msg)"
+                  @click="update()"
                 >
                   Update
                 </button>
                 <button
-                  v-if="!isNew"
-                  class="btn btn-danger"
+                  class="btn btn-secondary"
                   type="button"
-                  @click="destroy"
+                  @click.prevent="cancel()"
                 >
-                  Delete
+                  Cancel
                 </button>
-              </div>
-            </div>
-            <div class="col-12 col-md-8">
-              <div class="row">
-                <div class="col-12 col-md-6">
-                  <fieldset>
-                    <legend>Instances</legend>
-                    <form ref="editorInstances" @submit.prevent="addInstance">
-                      <div class="input-group">
-                        <span class="input-group-text">Add</span>
-                        <input
-                          v-model="newInstanceName"
-                          class="form-control"
-                          required
-                        />
-                        <button class="btn btn-primary" type="submit">
-                          Valider
-                        </button>
-                      </div>
-                    </form>
-                    <ul class="list-group">
-                      <li
-                        v-for="item in object.instances"
-                        :key="item.id"
-                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                        :class="{
-                          active:
-                            selectedInstance && item.id == selectedInstance.id,
-                        }"
-                        @click="selectInstance(item)"
-                      >
-                        <span>
-                          {{ item.name }}
-                        </span>
-                        <button
-                          class="btn btn-danger"
-                          type="button"
-                          @click.prevent="removeInstance(item)"
-                        >
-                          X
-                        </button>
-                      </li>
-                    </ul>
-                  </fieldset>
-                </div>
-                <div class="col-12 col-md-6">
-                  <div v-if="!isNew && selectedInstance">
-                    <form class="row g-3" @submit.prevent="updateInstance">
-                      <fieldset>
-                        <legend>Instance</legend>
-                        <div class="mb-3">
-                          <label class="form-label" for="nameI">Name</label
-                          ><input
-                            id="nameI"
-                            v-model="selectedInstance.name"
-                            class="form-control"
-                            type="text"
-                            required
-                          />
-                        </div>
-                      </fieldset>
-                      <div class="row">
-                        <div class="btn-group col-auto" role="group">
-                          <button class="btn btn-primary" type="submit">
-                            Update
-                          </button>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -165,32 +193,41 @@ You should have received a copy of the GNU General Public License along with Fac
   </div>
 </template>
 <script setup>
-import { ref, computed, inject, onBeforeMount } from "vue";
-import { useStore } from "vuex";
+import { ref, computed, onBeforeMount } from "vue";
 import { useRoute } from "vue-router";
+import Modal from "@/plugins/modal";
+import { useMachineModelsStore } from "@/stores/machines";
 
 import useEditor from "@/composables/useEditor";
 
-const store = useStore();
-const route = useRoute();
-const showModal = inject("show");
-
-const { editorForm, object, isNew, initObject, create, update, destroy } =
-  useEditor(
-    "machine_models",
-    {
+const store = useMachineModelsStore();
+const {
+  editorForm,
+  object,
+  isNew,
+  initObject,
+  create,
+  update,
+  destroy,
+  cancel,
+} = useEditor(store, {
       name: "",
       description: "",
       instances: [],
-    },
-    "Machine Models"
-  );
+      display_order: 0,
+    }, { name: "machines" });
 
 const cardName = computed(() =>
-  isNew.value ? "New Machine Models" : object.value.name
+  isNew.value ? "New machine models" : object.value.name
 );
+const route = useRoute();
 
+onBeforeMount(async () => {
+  await initObject(route);
+});
+const addForm = ref();
 const newInstanceName = ref("");
+const newInstanceError = ref(false);
 const selectedInstance = ref(null);
 
 function selectInstance(instance) {
@@ -198,42 +235,33 @@ function selectInstance(instance) {
 }
 
 async function addInstance() {
-  const instance = await store.dispatch("machines/create", {
-    data: {
-      name: newInstanceName.value,
-      model: object.value.id,
-    },
-  });
-  newInstanceName.value = "";
-  selectInstance(instance);
-  object.value.instances.push(instance);
-  showModal({ content: "Instance crée" });
+  if (addForm.value.checkValidity()) {
+    try {
+      await store.createInstance(
+        {
+          name: newInstanceName.value,
+          model: object.value.id,
+        }
+      );
+      newInstanceName.value = "";
+    } catch (error) {
+      if (error.response && error.response.status == 400) {
+        newInstanceError.value = true;
+      }
+    }
+  } else {
+    addForm.value.reportValidity();
+  }
 }
 async function updateInstance() {
-  const instance = await store.dispatch("machines/update", {
-    id: selectedInstance.value.id,
-    data: selectedInstance.value,
-  });
-  selectInstance(instance);
-  object.value.instances[
-    object.value.instances.findIndex((i) => i.id == instance.id)
-  ] = instance;
-  showModal({ content: "Instance mise à jour" });
+  await store.updateInstance(
+    selectedInstance.value.id,
+    selectedInstance.value
+  );
+  selectedInstance.value = null;
 }
 async function removeInstance(instance) {
-  await store.dispatch("machines/destroy", {
-    id: instance.id,
-  });
-  if (instance.id == selectedInstance.value.id) {
-    selectedInstance.value = null;
-  }
-  object.value.instances.splice(
-    object.value.instances.findIndex((i) => i.id == instance.id),
-    1
-  );
-  showModal({ content: "Instance supprimée" });
+  await store.destroyInstance(instance.id, object.value.id);
 }
-onBeforeMount(async () => {
-  await initObject(route);
-});
+
 </script>

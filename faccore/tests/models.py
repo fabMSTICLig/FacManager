@@ -193,7 +193,7 @@ class ReservationTest(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(
             response.data['non_field_errors'][0], "One manager is needed")
-        # test not manager not needed
+        # test manager not needed
         api_request = APIRequestFactory().post("/api/reservations/",
                                                {'reservation_type': self.restylaser.pk, 'user':self.stauser.pk, 'start_date': '2019-07-04T14:30:00.000000Z', 'end_date': '2019-07-04T16:30:00.000000Z', 'status': 'Accepted', 'manager': self.man1.pk, 'uses': [self.mtro1.pk]})
         force_authenticate(api_request, user=user)

@@ -99,6 +99,17 @@ You should have received a copy of the GNU General Public License along with Fac
             placeholder="Description"
           ></textarea>
         </div>
+        <div class="mb-3 form-check form-switch">
+          <label class="form-check-label" for="check-closing"
+            >Fermeture</label
+          >
+          <input
+            id="check-closing"
+            v-model="object.closing"
+            type="checkbox"
+            class="form-check-input"
+          />
+        </div>
       </fieldset>
       <div>
         <button
@@ -121,14 +132,14 @@ You should have received a copy of the GNU General Public License along with Fac
   </modal>
 </template>
 <script setup>
-import { ref, computed, watch, nextTick, onBeforeMount, onMounted } from "vue";
-import { useStore } from "vuex";
+import { ref, computed, watch, nextTick, onMounted } from "vue";
+import { useEventsStore } from "@/stores/events";
 import spacetime from "spacetime";
 
 import Modal from "@/plugins/modal";
 
 const emit = defineEmits(["interfaces", "created", "updated", "deleted"]);
-const store = useStore();
+const store = useEventsStore();
 const MIN_START_MINUTE = import.meta.env.VITE_APP_MIN_START_MINUTE * 60;
 
 const show = ref(false);
@@ -225,9 +236,9 @@ async function deleteEvent() {
   errors.value = [];
   waiting.value = true;
   try {
-    await store.dispatch("events/destroy", {
-      id: object.value.id,
-    });
+    await store.destroy(
+      object.value.id,
+    );
     emit("deleted", object.value.id);
     show.value = false;
   } catch (e) {
@@ -242,15 +253,15 @@ async function handleSubmit() {
     if (object.value.id) {
       emit(
         "updated",
-        await store.dispatch("events/update", {
-          id: object.value.id,
-          data: object.value,
-        })
+        await store.update(
+          object.value.id,
+          object.value,
+        )
       );
     } else {
       emit(
         "created",
-        await store.dispatch("events/create", { data: object.value })
+        await store.create(object.value)
       );
     }
     show.value = false;

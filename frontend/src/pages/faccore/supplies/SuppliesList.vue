@@ -15,18 +15,11 @@ You should have received a copy of the GNU General Public License along with Fac
 
 <template>
   <div class="row">
-    <div class="col-12 col-md-6">
+    <div class="col-12">
       <div class="card">
         <div class="card-header">
-          <div class="row  justify-content-between">
-            <div class="col-6">
-              <input
-                v-model="searchInput"
-                class="form-control"
-                type="search"
-                placeholder="Search"
-              >
-            </div>
+          <div class="row justify-content-between">
+            <h3 class="col-auto">Supplies</h3>
             <div class="col-auto">
               <router-link
                 class="btn btn-primary float-end"
@@ -39,29 +32,51 @@ You should have received a copy of the GNU General Public License along with Fac
           </div>
         </div>
         <div class="card-body">
+          <form class="row row-cols-lg-auto g-3 align-items-center">
+            <div class="col-12">
+              <label class="form-label visually-hidden" for="searchInput"
+                >Search</label
+              >
+              <input
+                id="searchInput"
+                v-model="searchInput"
+                class="form-control"
+                type="search"
+                placeholder="Search"
+              />
+            </div>
+          </form>
           <div class="table-responsive">
             <table class="table table-hover">
               <thead>
                 <tr>
                   <th>Name</th>
                   <th>Unit</th>
+                  <th></th>
                 </tr>
               </thead>
-              <tbody>
-                <tr
-                  v-for="item in objectsList"
-                  :key="item.id"
-                  @click="selectedObject = item"
-                >
+              <tbody v-if="loaded">
+                <tr v-for="item in objects" :key="item.id">
                   <td v-text="item.name" />
-                  <td v-text="supplyUnits[item.unit]" />
+                  <td v-text="units[item.unit]" />
+                  <td class="text-end">
+                    <router-link
+                      class="btn btn-primary"
+                      role="button"
+                      :to="{
+                        name: 'supply',
+                        params: { supplyid: item.id },
+                      }"
+                    >
+                      Update
+                    </router-link>
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
           <pagination
-            :total-pages="pagesCount"
-            :total="objectsCount"
+            :total="totalCount"
             :per-page="perPage"
             :current-page="currentPage"
             @pagechanged="onPageChange"
@@ -69,87 +84,45 @@ You should have received a copy of the GNU General Public License along with Fac
         </div>
       </div>
     </div>
-    <div class="col-12 col-md-6">
-      <div
-        v-if="selectedObject"
-        class="card"
-      >
-        <div class="card-header">
-          <h3
-            class="float-start"
-            v-text="selectedObject.name"
-          />
-          <div
-            class="btn-group float-end"
-            role="group"
-          >
-            <router-link
-              class="btn btn-primary"
-              role="button"
-              :to="{
-                name: 'supply',
-                params: { supplyid: selectedObject.id },
-              }"
-            >
-              Update
-            </router-link>
-          </div>
-        </div>
-        <div class="card-body">
-          <p class="card-text">
-            {{ selectedObject.description }}
-          </p>
-          <p class="card-text">
-            Unit : {{ supplyUnits[selectedObject.unit.toString()] }}
-          </p>
-          <h5>Machine Models</h5>
-          <DisplayIdList :items="selectedModels" />
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { watch, computed, onBeforeMount } from "vue";
-import { useStore } from "vuex";
+import { ref, onBeforeMount } from "vue";
+import useDebouncedRef from "@/composables/useDebouncedRef"
+import { storeToRefs } from "pinia";
+import { useSuppliesStore } from "@/stores/supplies";
 
-import useListFSP from "@/composables/useListFSP";
+import useSearchStorage from "@/composables/useSearchStorage";
 import Pagination from "@/components/nav/ListPagination.vue";
-import DisplayIdList from "@/components/ui/DisplayIdList.vue";
 
-const store = useStore();
+const store = useSuppliesStore();
+const { objects, count: totalCount, units } = storeToRefs(store);
 
-const supplyUnits = computed(() => store.getters["supplies/units"]);
+const loaded = ref(false);
+const searchInput = useDebouncedRef("");
+const currentPage = ref(1);
+const perPage = ref(parseInt(import.meta.env.VITE_APP_MAXLIST));
 
-const selectedModels = computed(() => store.getters["machine_models/list"]);
+function onPageChange(page) {
+  currentPage.value = page;
+}
 
-const {
-  selectedObject,
-  searchInput,
+async function fetch(params) {
+  await store.fetchList({ ...params });
+}
+
+const { refresh } = useSearchStorage(
+  "supplies",
+  fetch,
+  { search: searchInput },
   currentPage,
-  pagesCount,
-  perPage,
-  onPageChange,
-  loadPage,
-  objectsList,
-  objectsCount,
-  fetchList,
-} = useListFSP("supplies");
+  perPage.value
+);
 
-watch(selectedObject, () => {
-  if (selectedObject.value) {
-    if (selectedObject.value.models)
-      store.dispatch("machine_models/fetchList", {
-        params: { ids: selectedObject.value.models.join(",") },
-      });
-  }
-});
-
-onBeforeMount(() => {
-  store.dispatch("supplies/fetchUnits").then(() => {
-    loadPage();
-    return fetchList();
-  });
+onBeforeMount(async () => {
+  await store.fetchUnits();
+  await refresh();
+  loaded.value = true;
 });
 </script>

@@ -13,22 +13,21 @@
  * @author Germain Lemasson
 */
 
-import store from "../store";
+
+import { useAuthStore } from "@/stores/auth";
 
 export async function requireAuth(to, from, next) {
-  if (!store.getters.isAuthenticated) {
-    try{
-    await store.dispatch("checkAuth");
-    } catch(e)
-    {}
+  const store = useAuthStore();
+  if (!store.isAuthenticated) {
+    await store.checkAuth();
   }
-  if (store.getters.isAuthenticated) {
+  if (store.isAuthenticated) {
     if (
       to.name == "profile" ||
-      (store.getters.authUser.first_name &&
-        store.getters.authUser.last_name &&
-        store.getters.authUser.email &&
-        store.getters.authUser.rgpd_accept)
+      (store.authUser.first_name &&
+        store.authUser.last_name &&
+        store.authUser.email &&
+        store.authUser.rgpd_accept)
     ) {
       next();
     } else {
@@ -37,14 +36,15 @@ export async function requireAuth(to, from, next) {
       });
     }
   } else {
-    next("/");
+    window.location.href=import.meta.env.VITE_APP_LOGIN_URL;
   }
 }
 export async function requireAdmin(to, from, next) {
-  if (!store.getters.isAuthenticated) {
-    await store.dispatch("checkAuth");
+  const store = useAuthStore();
+  if (!store.isAuthenticated) {
+    await store.checkAuth();
   }
-  if (store.getters.isAuthenticated && store.getters.isAdmin) {
+  if (store.isAuthenticated && store.isAdmin) {
     next();
   } else {
     next({

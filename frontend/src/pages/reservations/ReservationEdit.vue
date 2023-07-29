@@ -158,15 +158,11 @@ You should have received a copy of the GNU General Public License along with Fac
                   </select>
                 </div>
               </div>
-              <div
-                v-for="mc in machinesChoices"
-                :key="mc.model.name"
-                class="mb-3"
-              >
-                <label v-text="mc.model.name"></label>
-                <select v-model="mc.selected" class="form-control" required>
+              <div v-if="machineModel" class="mb-3">
+                <label v-text="machineModel.name"></label>
+                <select v-model="object.machine" class="form-control" required>
                   <option
-                    v-for="m in mc.model.instances"
+                    v-for="m in machineModel.instances"
                     :key="m.id"
                     :value="m.id"
                     v-text="m.name"
@@ -181,6 +177,7 @@ You should have received a copy of the GNU General Public License along with Fac
                     v-model="object.manager"
                     class="form-control"
                     required
+                    :readonly="reservationType.spe_manager"
                   >
                     <option
                       v-for="manager in managers"
@@ -196,119 +193,122 @@ You should have received a copy of the GNU General Public License along with Fac
             <div v-if="object.id && addSU != null" class="col-12">
               <table class="table">
                 <thead>
-                <tr>
-                  <th>Supply</th>
-                  <th>Quantity</th>
-                  <th v-if="isAdmin"></th>
-                  <th></th>
-                </tr>
-              </thead>
-            <tbody>
-                <tr>
-                  <td>
-                    <select v-model="addSU.supply" class="form-control w-auto">
-                      <option
-                        v-for="supply in supplies"
-                        :key="supply.id"
-                        :value="supply.id"
+                  <tr>
+                    <th>Supply</th>
+                    <th>Quantity</th>
+                    <th v-if="isAdmin"></th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <select
+                        v-model="addSU.supply"
+                        class="form-control w-auto"
                       >
-                        {{ supply.name }}
-                      </option>
-                    </select>
-                  </td>
-                  <td>
-                    <div class="input-group">
-                      <input
-                        v-model="addSU.quantity"
-                        type="number"
-                        min="0"
-                        class="form-control"
-                      /><span class="input-group-text">{{
-                        getSupplyUnit(addSU.supply)
-                      }}</span>
-                    </div>
-                  </td>
-                  <td v-if="isAdmin"></td>
-
-                  <td>
-                    <div class="btn-group col-auto" role="group">
-                    <button
-                      class="btn btn-primary btn-sm"
-                      type="button"
-                      @click="addSupplyUsage()"
-                    >
-                      Add
-                    </button>
-                  </div>
-                  </td>
-                </tr>
-
-                <tr v-for="su in supplyUsages" :key="su.id">
-                  <td>
-                    <select
-                      v-model="su.supply"
-                      class="form-control w-auto"
-                      :readonly="!isAdmin && su.validated"
-                    >
-                      <option
-                        v-for="supply in supplies"
-                        :key="supply.id"
-                        :value="supply.id"
-                      >
-                        {{ supply.name }}
-                      </option>
-                    </select>
-                  </td>
-                  <td>
-                    <div class="input-group">
-                      <input
-                        v-model="su.quantity"
-                        type="number"
-                        min="0"
-                        class="form-control"
-                        :readonly="!isAdmin && su.validated"
-                      /><span class="input-group-text">{{
-                        getSupplyUnit(su.supply)
-                      }}</span>
-                    </div>
-                  </td>
-                  <td v-if="isAdmin">
-                    <div>
-                      <div class="form-check form-switch">
+                        <option
+                          v-for="supply in supplies"
+                          :key="supply.id"
+                          :value="supply.id"
+                        >
+                          {{ supply.name }}
+                        </option>
+                      </select>
+                    </td>
+                    <td>
+                      <div class="input-group">
                         <input
-                          v-model="su.validated"
-                          type="checkbox"
-                          class="form-check-input"
-                        />
+                          v-model="addSU.quantity"
+                          type="number"
+                          min="0"
+                          class="form-control"
+                        /><span class="input-group-text">{{
+                          getSupplyUnit(addSU.supply)
+                        }}</span>
                       </div>
-                    </div>
-                  </td>
+                    </td>
+                    <td v-if="isAdmin"></td>
 
-                  <td>
-                    <div v-if="!isAdmin && su.validated">Validated</div>
-                    <div v-else class="btn-group col-auto" role="group">
-                      <button
-                        class="btn btn-primary btn-sm"
-                        type="button"
-                        @click="updateSupplyUsage(su)"
+                    <td>
+                      <div class="btn-group col-auto" role="group">
+                        <button
+                          class="btn btn-primary btn-sm"
+                          type="button"
+                          @click="addSupplyUsage()"
+                        >
+                          Add
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr v-for="su in supplyUsages" :key="su.id">
+                    <td>
+                      <select
+                        v-model="su.supply"
+                        class="form-control w-auto"
+                        :readonly="!isAdmin && su.validated"
                       >
-                        <svg class="svg-icon-small">
-                          <use href="#update" />
-                        </svg>
-                      </button>
-                      <button
-                        class="btn btn-danger btn-sm"
-                        type="button"
-                        @click="deleteSupplyUsage(su)"
-                      >
-                        <svg class="svg-icon-small">
-                          <use href="#delete" />
-                        </svg>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
+                        <option
+                          v-for="supply in supplies"
+                          :key="supply.id"
+                          :value="supply.id"
+                        >
+                          {{ supply.name }}
+                        </option>
+                      </select>
+                    </td>
+                    <td>
+                      <div class="input-group">
+                        <input
+                          v-model="su.quantity"
+                          type="number"
+                          min="0"
+                          class="form-control"
+                          :readonly="!isAdmin && su.validated"
+                        /><span class="input-group-text">{{
+                          getSupplyUnit(su.supply)
+                        }}</span>
+                      </div>
+                    </td>
+                    <td v-if="isAdmin">
+                      <div>
+                        <div class="form-check form-switch">
+                          <input
+                            v-model="su.validated"
+                            type="checkbox"
+                            class="form-check-input"
+                          />
+                        </div>
+                      </div>
+                    </td>
+
+                    <td>
+                      <div v-if="!isAdmin && su.validated">Validated</div>
+                      <div v-else class="btn-group col-auto" role="group">
+                        <button
+                          class="btn btn-primary btn-sm"
+                          type="button"
+                          @click="updateSupplyUsage(su)"
+                        >
+                          <svg class="svg-icon-small">
+                            <use href="#update" />
+                          </svg>
+                        </button>
+                        <button
+                          class="btn btn-danger btn-sm"
+                          type="button"
+                          @click="deleteSupplyUsage(su)"
+                        >
+                          <svg class="svg-icon-small">
+                            <use href="#delete" />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
               </table>
             </div>
           </div>
@@ -341,17 +341,41 @@ You should have received a copy of the GNU General Public License along with Fac
 </template>
 <script setup>
 import { ref, computed, watch, nextTick, onBeforeMount, onMounted } from "vue";
-import { useStore } from "vuex";
+import { storeToRefs } from "pinia";
+import { useAuthStore } from "@/stores/auth";
+import { useUsersStore } from "@/stores/users";
+import {
+  useReservationTypesStore,
+  useReservationsStore,
+} from "@/stores/reservations";
+import { useProjectsStore } from "@/stores/projects";
+import { useMachineModelsStore } from "@/stores/machines";
+import { useManagersStore } from "@/stores/managers";
+import { useSuppliesStore, useSupplyUsagesStore } from "@/stores/supplies";
+import { useTrainingLevelsStore } from "@/stores/traininglevels";
 import spacetime from "spacetime";
 import Multiselect from "@vueform/multiselect";
 
 import Modal from "@/plugins/modal";
 
 const emit = defineEmits(["interfaces", "created", "updated", "deleted"]);
-const store = useStore();
+const store = useReservationsStore();
 
-const authUser = computed(() => store.getters.authUser);
-const isAdmin = computed(() => store.getters.isAdmin);
+const authStore = useAuthStore();
+const { authUser, isAdmin } = storeToRefs(authStore);
+
+const usersStore = useUsersStore();
+const projectsStore = useProjectsStore();
+const managersStore = useManagersStore();
+const machineModelsStore = useMachineModelsStore();
+const suppliesStore = useSuppliesStore();
+const supplyUsagesStore = useSupplyUsagesStore();
+const reservationTypesStore = useReservationTypesStore();
+const { objects: resaTypesDict, list: resaTypes } = storeToRefs(
+  reservationTypesStore
+);
+const trainingLevelsStore = useTrainingLevelsStore();
+const { objects: tls } = storeToRefs(trainingLevelsStore);
 
 const START_HOUR = import.meta.env.VITE_APP_START_HOUR;
 const END_HOUR = import.meta.env.VITE_APP_END_HOUR;
@@ -386,9 +410,7 @@ const reservationReadOnly = computed(() => {
 
 const msuser = ref();
 async function findUser(query) {
-  let users = await store.dispatch("users/fetchList", {
-    params: { search: query },
-  });
+  let users = await usersStore.fetchList({ search: query });
   return users.map((u) => {
     return {
       label: "@" + u.username + " " + u.first_name + " " + u.last_name,
@@ -398,25 +420,26 @@ async function findUser(query) {
 }
 
 const allowedTypes = computed(() => {
-  if (isAdmin.value) return store.getters["reservation_types/list"];
+  if (isAdmin.value) return resaTypes.value;
   else {
-    return store.getters["reservation_types/list"].filter((rt) => {
+    return resaTypes.value.filter((rt) => {
       if (rt.need_manager) return true;
       else {
-        return !rt.needs.some(
-          (mmid) => store.getters["training_levels/byId"](mmid).need_manager
-        );
+        if (rt.machine) return !tls.value[rt.machine].need_manager;
       }
     });
   }
 });
 const reservationType = computed(() => {
   return (
-    store.getters["reservation_types/byId"](object.value.reservation_type) || {
+    resaTypesDict.value[object.value.reservation_type] || {
       need_manager: false,
-      needs: [],
+      machine: null,
     }
   );
+});
+watch(reservationType, ()=>{
+  if(reservationType.value.spe_manager) object.value.manager = reservationType.value.spe_manager;
 });
 const date_date = computed({
   get: function () {
@@ -450,7 +473,10 @@ const date_time = computed({
   },
 });
 const pasteDate = computed(() => {
-  return Date.parse(object.value.start_date) - Date.now() < 0 && (object.value.status == "Requested" || ! object.value.id);
+  return (
+    Date.parse(object.value.start_date) - Date.now() < 0 &&
+    (object.value.status == "Requested" || !object.value.id)
+  );
 });
 const duration = computed({
   get: function () {
@@ -467,24 +493,17 @@ const duration = computed({
   },
 });
 
-const managers = computed(() => store.getters["managers/list"]);
+const { list: managers } = storeToRefs(managersStore);
 
-const machinesChoices = computed(() => {
-  let mc = {};
-  reservationType.value.needs.forEach((mmid) => {
-    let mm = store.getters["machine_models/byId"](mmid);
-    mc[mmid] = { model: mm, selected: null };
-    mm.instances.some((i) => {
-      if (object.value.uses.indexOf(i.id) > -1) {
-        mc[mmid].selected = i.id;
-        return true;
-      } else return false;
-    });
-  });
-  return mc;
+const { objects: machineModels } = storeToRefs(machineModelsStore);
+
+const machineModel = computed(() => {
+  if (reservationType.value.machine_model)
+    return machineModels.value[reservationType.value.machine_model];
+  else return null;
 });
 
-const projects = computed(() => store.getters["projects/list"]);
+const { list: projects } = storeToRefs(projectsStore);
 
 function newResa(startDate, endDate, resource) {
   object.value = {
@@ -497,33 +516,22 @@ function newResa(startDate, endDate, resource) {
   }
   object.value.user = authUser.value.id;
   if ("model" in resource.extendedProps)
-    object.value.uses = [parseInt(resource.id)];
-  else object.value.uses = [];
+    object.value.machine = parseInt(resource.id);
+  else object.value.machine = null;
   initResa();
 }
 
 async function updateResa(resa) {
-  object.value = Object.assign(
-    {},
-    await store.dispatch("reservations/fetchSingle", {
-      id: resa.id,
-    })
-  );
-  await store.dispatch("supply_usages/fetchList", {
-    prefix: "/reservations/" + resa.id + "/",
-  });
+  object.value = Object.assign({}, await store.fetchSingle(resa.id));
+  await supplyUsagesStore.fetchList({}, "/reservations/" + resa.id + "/");
   initResa();
 }
 
 async function initResa() {
   errors.value = [];
-  store.dispatch("projects/fetchList", {
-    params: { afterdate: object.value.start_date },
-  });
+  projectsStore.fetchList({ afterdate: object.value.start_date });
   if (object.value.user && isAdmin.value) {
-    const u = await store.dispatch("users/fetchSingle", {
-      id: object.value.user,
-    });
+    const u = await usersStore.fetchSingle(object.value.user);
     msuser.value.select({
       label: "@" + u.username + " " + u.first_name + " " + u.last_name,
       value: u.id,
@@ -540,9 +548,7 @@ async function deleteResa() {
   errors.value = [];
   waiting.value = true;
   try {
-    await store.dispatch("reservations/destroy", {
-      id: object.value.id,
-    });
+    await store.destroy(object.value.id);
     emit("deleted", object.value.id);
     show.value = false;
   } catch (e) {
@@ -553,33 +559,21 @@ async function deleteResa() {
 
 async function handleSubmit() {
   errors.value = [];
-  let uses = [];
-  for (const [key, mc] of Object.entries(machinesChoices.value)) {
-    if (mc.selected) uses.push(mc.selected);
-  }
-  object.value.uses = uses;
   waiting.value = true;
+  if(!reservationType.value.machine_model) object.value.machine=null;
+  if(!reservationType.value.need_manager) object.value.manager=null;
   try {
     if (object.value.id) {
-      emit(
-        "updated",
-        await store.dispatch("reservations/update", {
-          id: object.value.id,
-          data: object.value,
-        })
-      );
+      emit("updated", await store.update(object.value.id, object.value));
     } else {
-      emit(
-        "created",
-        await store.dispatch("reservations/create", { data: object.value })
-      );
+      emit("created", await store.create(object.value));
     }
     show.value = false;
   } catch (e) {
     if (e.response.status == 400)
-      if(e.response.data.non_field_errors)
+      if (e.response.data.non_field_errors)
         errors.value = errors.value.concat(e.response.data.non_field_errors);
-      else if(Array.isArray(e.response.data))
+      else if (Array.isArray(e.response.data))
         errors.value = errors.value.concat(e.response.data);
   }
   waiting.value = false;
@@ -588,37 +582,37 @@ async function handleSubmit() {
 //////////////Supply Usages/////////
 
 onBeforeMount(() => {
-  store.dispatch("supplies/fetchUnits");
+  suppliesStore.fetchUnits();
 });
-
-const supplyUnits = computed(() => store.getters["supplies/units"]);
-const supplyUsages = computed(() => store.getters["supply_usages/list"]);
-const supplies = computed(() => store.getters["supplies/list"]);
+const {
+  units: supplyUnits,
+  list: supplies,
+  objects: suppliesDict,
+} = storeToRefs(suppliesStore);
+const { list: supplyUsages } = storeToRefs(supplyUsagesStore);
 function getSupplyUnit(supplyid) {
-  let supply = store.getters["supplies/byId"](supplyid);
+  let supply = suppliesDict.value[supplyid];
   if (supply) return supplyUnits.value[supply.unit];
   else return "";
 }
 const addSU = ref(null);
-if(supplies.value.length)
-{
-  addSU.value={quantity:1, supply:supplies.value[0].id};
+if (supplies.value.length) {
+  addSU.value = { quantity: 1, supply: supplies.value[0].id };
 }
 
-function addSupplyUsage()
-{
-  store.dispatch("supply_usages/create",{prefix:"/reservations/"+object.value.id+"/", data:addSU.value})
+function addSupplyUsage() {
+  supplyUsagesStore.create(
+    addSU.value,
+    "/reservations/" + object.value.id + "/"
+  );
 }
 
-function updateSupplyUsage(su)
-{
-  store.dispatch("supply_usages/update",{prefix:"/reservations/"+object.value.id+"/", data:su, id:su.id})
+function updateSupplyUsage(su) {
+  supplyUsagesStore.update(su.id, su, "/reservations/" + object.value.id + "/");
 }
-function deleteSupplyUsage(su)
-{
-  store.dispatch("supply_usages/destroy",{prefix:"/reservations/"+object.value.id+"/", id:su.id})
+function deleteSupplyUsage(su) {
+  supplyUsagesStore.destroy(su.id, "/reservations/" + object.value.id + "/");
 }
-
 </script>
 <style>
 .modal-dialog {

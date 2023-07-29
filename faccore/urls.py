@@ -16,14 +16,13 @@ You should have received a copy of the GNU General Public License along with Fac
 from rest_framework_nested import routers
 from django.urls import path, include
 from django.conf import settings
-from .views import SupplyViewSet, SupplyUsageViewSet, MachineModelViewSet, ManagerViewSet, MachineViewSet, AvailabilityViewSet, ReservationTypeViewSet, ReservationViewSet, EventViewSet, TrainingLevelView, RefreshResourcesView, UsagesView
+from .views import SupplyViewSet, SupplyUsageViewSet, MachineModelViewSet, ManagerViewSet, MachineViewSet, ReservationTypeViewSet, ReservationViewSet, EventViewSet, TrainingLevelView, RefreshResourcesView, UsagesView
 
 router = routers.DefaultRouter()
 router.register(r'supplies', SupplyViewSet)
 router.register(r'machine_models', MachineModelViewSet)
 router.register(r'managers', ManagerViewSet)
 router.register(r'machines', MachineViewSet)
-router.register(r'availabilities', AvailabilityViewSet)
 router.register(r'reservation_types', ReservationTypeViewSet)
 router.register(r'reservations', ReservationViewSet)
 router.register(r'events', EventViewSet)

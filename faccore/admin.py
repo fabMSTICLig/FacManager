@@ -14,7 +14,7 @@ You should have received a copy of the GNU General Public License along with Fac
 """
 
 from django.contrib import admin
-from .models import MachineModel, Machine, TrainingLevel, Supply, SupplyUsage, Manager, Reservation, ReservationType, Availability
+from .models import MachineModel, Machine, TrainingLevel, Supply, SupplyUsage, Manager, Reservation, ReservationType
 # Register your models here.
 
 class TrainingLevelInline(admin.TabularInline):
@@ -49,12 +49,6 @@ class ManagerAdmin(admin.ModelAdmin):
 @admin.register(ReservationType)
 class ReservationTypeAdmin(admin.ModelAdmin):
     pass
-
-
-@admin.register(Availability)
-class AvailabilityAdmin(admin.ModelAdmin):
-    pass
-
 
 @admin.register(Reservation)
 class ReservationAdmin(admin.ModelAdmin):

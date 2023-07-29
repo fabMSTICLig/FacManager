@@ -18,6 +18,7 @@ from django.core.validators import MinValueValidator
 from django.conf import settings
 from facusers.models import Project
 
+from django_caldav_event.models import CalendarInfos
 
 class NamedModel(models.Model):
     """An abstract class used for model with a name """
@@ -99,68 +100,47 @@ class Supply(NamedModel):
     def __str__(self):
         return self.name
 
+class Manager(models.Model):
+    """
+    Represent a Manager
+    ----------
+    """
+    calendar = models.OneToOneField(
+        CalendarInfos,
+        on_delete=models.CASCADE,
+    )
+    user = models.OneToOneField(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE,
+                             primary_key=True,
+                             related_name='manager')
+
+    def __str__(self):
+        return self.user.first_name
 
 class ReservationType(NamedModel):
     """
     Represent a type of reservation
     ----------
     name : str
-    needs : [MachineModel]
-        Machines needed for this type of reservation
+    machine_model : Machine model needed for this type of reservation
     description : str, optional
-    min_time_slot : float
-        minimal possible time slot for this type of reservation
-    max_time_slot : float
-        maximal duration of this type of reservation
     need_manager : bool
+    spe_manager: force a specific manager
         true if this type of reservation needs a manager
     """
-    needs = models.ManyToManyField(MachineModel, blank=True)
+    machine_model = models.ForeignKey(MachineModel,
+            on_delete=models.CASCADE, 
+            blank=True, 
+            null=True)
     description = models.CharField(max_length=300, null=True, blank=True)
-    min_time_slot = models.DecimalField(
-        max_digits=10, decimal_places=3, default=0.5,
-        validators=[MinValueValidator(0.0)])
-    max_time_slot = models.DecimalField(
-        max_digits=10, decimal_places=3, default=1,
-        validators=[MinValueValidator(0.0)])
     need_manager = models.BooleanField(default=False)
+    spe_manager = models.ForeignKey(Manager,
+                             on_delete=models.CASCADE,
+                             related_name='manager',
+                             blank=True,
+                             null=True)
 
-
-class TimedResource(models.Model):
-    """
-    Base class for Resource that can be reserved for some time
-    """
-
-    def __str__(self):
-        return self.getChild().__str__()
-
-    def getChild(self):
-        try:
-            return self.machine
-        except (Machine.DoesNotExist):
-            return self.manager
-
-
-class Availability(models.Model):
-    """
-    Represent an availability
-    ----------
-    start_date : date
-    end_date : date
-    resources : [TimedResource]
-        Resources available for this amount of time
-    """
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
-    resources = models.ManyToManyField(TimedResource)
-
-    def __str__(self):
-        return (str(self.resources) + '(' +
-                self.start_date.strftime("%Y-%m-%d") +
-                ' ' + self.end_date.strftime("%Y-%m-%d") + ')')
-
-
-class Machine(NamedModel, TimedResource):
+class Machine(NamedModel):
     """
     Represent a particlar machine
     ----------
@@ -173,17 +153,6 @@ class Machine(NamedModel, TimedResource):
 
     def __str__(self):
         return str(self.model) + ' ' + self.name
-
-
-class Manager(NamedModel, TimedResource):
-    """
-    Represent a Manager wich is a resource
-    ----------
-    name : str
-    email : email
-    """
-    email = models.EmailField(max_length=100, null=True, blank=True)
-
 
 class Reservation(models.Model):
     """
@@ -228,12 +197,14 @@ class Reservation(models.Model):
     project = models.ForeignKey(
         Project, null=True, blank=True, on_delete=models.SET_NULL)
     start_date = models.DateTimeField()
-
-    status = models.SmallIntegerField(choices=STATUS, default=REQUESTED)
     end_date = models.DateTimeField()
+    status = models.SmallIntegerField(choices=STATUS, default=REQUESTED)
     reservation_type = models.ForeignKey(
         ReservationType, on_delete=models.CASCADE)
-    uses = models.ManyToManyField(Machine, blank=True)
+    machine = models.ForeignKey(Machine,
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True)
     manager = models.ForeignKey(
         Manager, on_delete=models.SET_NULL, blank=True, null=True)
     created_date = models.DateTimeField(auto_now_add=True)
@@ -284,3 +255,4 @@ class Event(NamedModel):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     description = models.CharField(max_length=300, null=True, blank=True)
+    closing = models.BooleanField(default=False)

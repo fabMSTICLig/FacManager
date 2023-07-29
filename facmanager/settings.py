@@ -47,6 +47,7 @@ DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 INSTALLED_APPS = [
     'faccore.apps.FaccoreConfig',
     'facusers.apps.FacusersConfig',
+    'django_caldav_event',
     'django_su',
     'django.contrib.admin',
     'django.contrib.auth',

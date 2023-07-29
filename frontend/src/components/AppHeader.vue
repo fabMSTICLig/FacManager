@@ -110,10 +110,11 @@ You should have received a copy of the GNU General Public License along with Fac
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import { useStore } from "vuex";
+import { ref } from "vue";
+import { storeToRefs } from "pinia";
+import { useAuthStore } from "@/stores/auth";
 import Modal from "@/plugins/modal";
-import Dropdown from "./ui/Dropdown.vue";
+import Dropdown from "./ui/DropdownComponent.vue";
 
 const title = import.meta.env.VITE_APP_TITLE;
 const cas = import.meta.env.VITE_APP_CASNAME;
@@ -140,10 +141,6 @@ const fabroutes = [
   {
     to: { name: "machines" },
     label: "Machines",
-  },
-  {
-    to: { name: "managers" },
-    label: "Managers",
   },
   {
     to: { name: "resatypes" },
@@ -178,10 +175,8 @@ function collapse() {
   }
 }
 
-const store = useStore();
-const authUser = computed(() => store.getters.authUser);
-const isAuthenticated = computed(() => store.getters.isAuthenticated);
-const isAdmin = computed(() => store.getters.isAdmin);
+const store = useAuthStore();
+const { isAuthenticated, authUser, isAdmin } = storeToRefs(store);
 
 const showLogin = ref(false);
 const wrongCredentials = ref(false);
@@ -190,10 +185,10 @@ const password = ref();
 
 async function login() {
   try {
-    const response = await store.dispatch("login", {
-      username: username.value,
-      password: password.value,
-    });
+    const response = await store.login(
+      username.value,
+      password.value
+    );
     if (response.status == 202) {
       window.location = "/";
     }
@@ -207,7 +202,7 @@ async function login() {
 async function logout() {
   if (authUser.value.externe) window.location = "/cas/logout";
   else {
-    await store.dispatch("logout");
+    await store.logout();
     window.location = "/";
   }
 }

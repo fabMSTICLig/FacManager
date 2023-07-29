@@ -17,8 +17,20 @@ You should have received a copy of the GNU General Public License along with Fac
   <div class="row">
     <div class="col-12">
       <div v-if="object" class="card">
-        <div class="card-header">
-          <h3>{{ cardName }}</h3>
+        <div class="card-header row justify-content-between">
+          <h3 class="col-auto">
+            Supplies: <strong>{{ cardName }}</strong>
+          </h3>
+          <div class="col-auto btn-group float-end" role="group">
+            <button
+              v-if="!isNew"
+              class="btn btn-danger"
+              type="button"
+              @click.prevent="destroy()"
+            >
+              Delete
+            </button>
+          </div>
         </div>
         <div class="card-body">
           <form ref="editorForm" class="row g-3">
@@ -50,7 +62,7 @@ You should have received a copy of the GNU General Public License along with Fac
                   <label class="form-label" for="unit">Unit</label>
                   <select id="unit" v-model="object.unit" class="form-select">
                     <option
-                      v-for="(unitname, unit) in supplyUnits"
+                      v-for="(unitname, unit) in units"
                       :key="unit"
                       :value="parseInt(unit)"
                       v-text="unitname"
@@ -63,7 +75,7 @@ You should have received a copy of the GNU General Public License along with Fac
               <fieldset>
                 <legend>Machine models</legend>
                 <div class="mb-3">
-                  <DynList v-model="object.models" ressource="machine_models" />
+                  <DynList v-model="object.models" :resource="fetchMachineModels" />
                 </div>
               </fieldset>
             </div>
@@ -86,12 +98,11 @@ You should have received a copy of the GNU General Public License along with Fac
                 Update
               </button>
               <button
-                v-if="!isNew"
-                class="btn btn-danger"
-                unit="button"
-                @click.prevent="destroy()"
+                class="btn btn-secondary"
+                type="button"
+                @click.prevent="cancel"
               >
-                Delete
+                Cancel
               </button>
             </div>
           </form>
@@ -103,31 +114,36 @@ You should have received a copy of the GNU General Public License along with Fac
 
 <script setup>
 import { computed, onBeforeMount } from "vue";
-import { useStore } from "vuex";
 import { useRoute } from "vue-router";
+import { storeToRefs } from "pinia";
 
 import useEditor from "@/composables/useEditor";
 import DynList from "@/components/ui/DynList.vue";
+import { useSuppliesStore } from "@/stores/supplies";
+import { useMachineModelsStore } from "@/stores/machines";
 
-const store = useStore();
-
-const { editorForm, object, isNew, initObject, create, update, destroy } =
-  useEditor(
-    "supplies",
-    { name: "", unit: null, models: [], description: "" },
-    "Supplies"
-  );
+const store = useSuppliesStore();
+const { units } = storeToRefs(store);
+const mmstore = useMachineModelsStore();
+const { fetchList:fetchMachineModels } = mmstore;
+const {
+  editorForm,
+  object,
+  isNew,
+  initObject,
+  create,
+  update,
+  destroy,
+  cancel,
+} = useEditor(store, { name: "", models:[] , units: null }, { name: "supplies" });
 
 const cardName = computed(() =>
   isNew.value ? "New supply" : object.value.name
 );
-const supplyUnits = computed(() => store.getters["supplies/units"]);
-
 const route = useRoute();
 
-onBeforeMount(() => {
-  store.dispatch("supplies/fetchUnits").then(() => {
-    return initObject(route);
-  });
+onBeforeMount(async () => {
+  await store.fetchUnits();
+  await initObject(route);
 });
 </script>

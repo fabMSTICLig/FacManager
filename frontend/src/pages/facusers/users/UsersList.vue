@@ -1,60 +1,72 @@
-<!--
-Copyright (C) 2020-2022 LIG Université Grenoble Alpes
-
-
-This file is part of FacManager.
-
-FacManager is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-
-FacManager is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with FacManager. If not, see <https://www.gnu.org/licenses/>
-
-@author Germain Lemasson
--->
-
 <template>
   <div class="row">
-    <div class="col-12 col-md-6">
+    <div class="col-12">
       <div class="card">
         <div class="card-header">
           <div class="row justify-content-between">
-            <div class="col-6">
+            <h3 class="col-auto">Utilisateurs</h3>
+          </div>
+        </div>
+        <div class="card-body">
+          <form class="row row-cols-lg-auto g-3 align-items-center">
+            <div class="col-12">
+              <label class="form-label visually-hidden" for="searchInput"
+                >Chercher</label
+              >
               <input
+                id="searchInput"
                 v-model="searchInput"
                 class="form-control"
                 type="search"
                 placeholder="Search"
               />
             </div>
-          </div>
-        </div>
-        <div class="card-body">
+          </form>
+
           <div class="table-responsive">
             <table class="table table-hover">
               <thead>
                 <tr>
-                  <th>Name utilisateur</th>
-                  <th>Prénom</th>
-                  <th>Name</th>
+                  <th>Nom utilisateur</th>
+                  <th>Prénom Nom</th>
+                  <th>Validated</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
-                <tr
-                  v-for="item in objectsList"
-                  :key="item.id"
-                  @click="selectedObject = item"
-                >
+                <tr v-for="item in objects" :key="item.id">
                   <td v-text="item.username" />
-                  <td v-text="item.first_name" />
-                  <td v-text="item.last_name" />
+                  <td>
+                    <a :href="'mailto:' + item.email"
+                      >{{ item.first_name }} {{ item.last_name }}</a
+                    >
+                  </td>
+                  <td>
+                    <svg v-show="item.charter" class="svg-icon">
+                      <use href="#check" />
+                    </svg>
+                    <svg v-show="!item.charter" class="svg-icon">
+                      <use href="#cross" />
+                    </svg>
+                  </td>
+                  <td class="text-end">
+                    <router-link
+                      class="btn btn-primary"
+                      role="button"
+                      :to="{
+                        name: 'useredit',
+                        params: { userid: item.id },
+                      }"
+                    >
+                      Modifier
+                    </router-link>
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
           <pagination
-            :total-pages="pagesCount"
-            :total="objectsCount"
+            :total="totalCount"
             :per-page="perPage"
             :current-page="currentPage"
             @pagechanged="onPageChange"
@@ -62,105 +74,45 @@ You should have received a copy of the GNU General Public License along with Fac
         </div>
       </div>
     </div>
-    <div class="col-12 col-md-6">
-      <div v-if="selectedObject" class="card">
-        <div class="card-header">
-          <h3 class="float-start" v-text="selectedObject.username" />
-          <div class="btn-group float-end" role="group">
-            <router-link
-              class="btn btn-primary"
-              role="button"
-              :to="{ name: 'useredit', params: { userid: selectedObject.id } }"
-            >
-              Update </router-link
-            ><router-link
-              class="btn btn-primary"
-              role="button"
-              :to="{
-                name: 'userusages',
-                params: { userid: selectedObject.id },
-              }"
-            >
-              Usages
-            </router-link>
-          </div>
-        </div>
-        <div class="card-body">
-          <p class="card-text">
-            <span
-              ><strong>{{ selectedObject.username }} :&nbsp;</strong></span
-            >{{ selectedObject.first_name }} {{ selectedObject.last_name }}
-          </p>
-          <p>
-            <span><strong>Email :&nbsp;</strong></span
-            ><a :href="'mailto:' + selectedObject.email">{{
-              selectedObject.email
-            }}</a>
-          </p>
-          <p class="card-text">
-            Charter :
-            <svg v-show="selectedObject.charter" class="svg-icon">
-              <use href="#check" />
-            </svg>
-            <svg v-show="!selectedObject.charter" class="svg-icon">
-              <use href="#cross" />
-            </svg>
-          </p>
-
-          <h5>Organizations</h5>
-          <DisplayIdList :items="selectedOrganizations" />
-          <h5>Projects</h5>
-          <DisplayIdList :items="selectedProjects" />
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { computed, watch, onBeforeMount } from "vue";
-import { useStore } from "vuex";
+import { onBeforeMount, ref } from "vue";
+import { storeToRefs } from "pinia";
+import useDebouncedRef from "@/composables/useDebouncedRef";
+import { useUsersStore } from "@/stores/users";
 
-import DisplayIdList from "@/components/ui/DisplayIdList.vue";
-
-import useListFSP from "@/composables/useListFSP";
 import Pagination from "@/components/nav/ListPagination.vue";
+import useSearchStorage from "@/composables/useSearchStorage";
 
-const {
-  selectedObject,
-  searchInput,
+const store = useUsersStore();
+const loaded = ref(false);
+
+const { objects, count: totalCount } = storeToRefs(store);
+
+const searchInput = useDebouncedRef("");
+const currentPage = ref(1);
+const perPage = ref(parseInt(import.meta.env.VITE_APP_MAXLIST));
+
+function onPageChange(page) {
+  currentPage.value = page;
+}
+
+async function fetch(params) {
+  await store.fetchList({ ...params });
+}
+
+const { refresh } = useSearchStorage(
+  "users",
+  fetch,
+  { search: searchInput },
   currentPage,
-  pagesCount,
-  perPage,
-  onPageChange,
-  loadPage,
-  objectsList,
-  objectsCount,
-  fetchList,
-} = useListFSP("users");
-
-const store = useStore();
-
-const selectedOrganizations = computed(
-  () => store.getters["organizations/list"]
+  perPage.value
 );
-const selectedProjects = computed(() => store.getters["projects/list"]);
 
-watch(selectedObject, () => {
-  if (selectedObject.value) {
-    if (selectedObject.value.organizations)
-      store.dispatch("organizations/fetchList", {
-        params: { ids: selectedObject.value.organizations.join(",") },
-      });
-    if (selectedObject.value.projects)
-      store.dispatch("projects/fetchList", {
-        params: { ids: selectedObject.value.projects.join(",") },
-      });
-  }
-});
-
-onBeforeMount(() => {
-  loadPage();
-  return fetchList();
+onBeforeMount(async () => {
+  await refresh();
+  loaded.value = true;
 });
 </script>
