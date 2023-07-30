@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License along with Fac
 from rest_framework_nested import routers
 from django.urls import path, include
 from django.conf import settings
-from .views import SupplyViewSet, SupplyUsageViewSet, MachineModelViewSet, ManagerViewSet, MachineViewSet, ReservationTypeViewSet, ReservationViewSet, EventViewSet, TrainingLevelView, RefreshResourcesView, UsagesView
+from .views import SupplyViewSet, SupplyUsageViewSet, MachineModelViewSet, ManagerViewSet, MachineViewSet, ReservationTypeViewSet, ReservationViewSet, EventViewSet, TrainingLevelView, RefreshResourcesView, UsagesView, ManagerEventsView
 
 router = routers.DefaultRouter()
 router.register(r'supplies', SupplyViewSet)
@@ -33,6 +33,7 @@ router_resa.register(r'supply_usages', SupplyUsageViewSet, basename='supply_usag
 urlpatterns = [
     path('refresh/', RefreshResourcesView.as_view()),
     path('usages/', UsagesView.as_view()),
+    path('managers/events/', ManagerEventsView.as_view()),
     path('users/<int:user_pk>/training_levels/', TrainingLevelView.as_view()),
     path('', include(router.urls)),
     path('', include(router_resa.urls)),

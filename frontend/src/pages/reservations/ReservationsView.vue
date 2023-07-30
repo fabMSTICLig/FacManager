@@ -75,6 +75,7 @@ import FullCalendar from "@fullcalendar/vue3";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import frLocale from "@fullcalendar/core/locales/fr";
 import interactionPlugin from "@fullcalendar/interaction";
+import bootstrap5Plugin from '@fullcalendar/bootstrap5';
 
 import { ref, nextTick, onBeforeMount } from "vue";
 import { storeToRefs } from "pinia";
@@ -116,7 +117,7 @@ const { list: machine_models } = storeToRefs(machineModelsStore);
 const eventsStore = useEventsStore();
 const { list: events } = storeToRefs(eventsStore);
 const managersStore = useManagersStore();
-const { list: managers } = storeToRefs(managersStore);
+const { list: managers, events:managersEvents } = storeToRefs(managersStore);
 
 
 onBeforeMount(async () => {
@@ -130,7 +131,7 @@ onBeforeMount(async () => {
   resources.value = resources.value.concat(
     managers.value.map((manager) => {
       return {
-        id: manager.id,
+        id: "m"+manager.id,
         title: manager.name,
         group: "02 Managers",
         manager: manager,
@@ -178,11 +179,22 @@ function resaToCalEvent(resa) {
     resa: resa,
   };
   if (resa.machine) calEvent.resourceIds.push(resa.machine);
-  if (resa.manager) calEvent.resourceIds.push(resa.manager);
+  if (resa.manager) calEvent.resourceIds.push("m"+resa.manager);
   if (resa.own) calEvent.borderColor = "red";
   return calEvent;
 }
 
+function managerEventToCalEvent(event) {
+  return {
+    title: "",
+    start: event.dtstart,
+    end: event.dtend,
+    id: "me" + event.id,
+    display: 'background',
+    color: "red",
+    resourceId: "m"+event.manager,
+  };
+}
 function fetchCalEvents(dateInfo, success) {
   datesQuery.value = {
     mindate: dateInfo.startStr,
@@ -192,10 +204,12 @@ function fetchCalEvents(dateInfo, success) {
   Promise.all([
     reservationsStore.fetchList(datesQuery.value),
     eventsStore.fetchList(datesQuery.value),
+    managersStore.fetchEvents(datesQuery.value),
   ]).then(() => {
     let ev = [];
     ev = reservations.value.map(resaToCalEvent);
     ev = ev.concat(events.value.map(eventToCalEvent));
+    ev = ev.concat(managersEvents.value.map(managerEventToCalEvent));
     success(ev);
   });
 }
@@ -280,15 +294,16 @@ function eventClick({ event }) {
 const headerToolbar = {
   center: "resourceTimelineDay resourceTimelineWeek",
   left: "title",
-  right: "refresh today prev,next",
+  right: "refresh today prevWeek,nextWeek",
 };
 
 
 
 const calendarOptions = {
-  plugins: [resourceTimelinePlugin, interactionPlugin],
+  plugins: [bootstrap5Plugin, resourceTimelinePlugin, interactionPlugin],
   schedulerLicenseKey: "GPL-My-Project-Is-Open-Source",
   initialView: "resourceTimelineWeek",
+  themeSystem: 'bootstrap5',
   locale: frLocale,
   height: "auto",
   contentHeight: "auto",
@@ -310,9 +325,21 @@ const calendarOptions = {
     refresh: {
       text: "Refresh",
       click: () => {
-        reservations.fetchList(datesQuery.value);
+        reservationsStore.fetchList(datesQuery.value);
       },
     },
+    prevWeek: {
+      text : "<",
+      click: function() {
+            calAPI.incrementDate( { days: -7 } );
+          }
+    },
+    nextWeek: {
+      text : ">",
+      click: function() {
+            calAPI.incrementDate( { days: 7 } );
+          }
+    }
   },
   headerToolbar: headerToolbar,
   resourceGroupField: "group",
@@ -329,8 +356,5 @@ const calendarOptions = {
 
 .event-background {
   background: #007bff;
-}
-.avail-background {
-  background: rgba(143, 223, 130, 0.3);
 }
 </style>

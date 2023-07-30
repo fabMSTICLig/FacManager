@@ -108,6 +108,7 @@ class Manager(models.Model):
     calendar = models.OneToOneField(
         CalendarInfos,
         on_delete=models.CASCADE,
+        related_name='manager'
     )
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE,

@@ -41,7 +41,8 @@ You should have received a copy of the GNU General Public License along with Fac
 import FullCalendar from "@fullcalendar/vue3";
 import frLocale from "@fullcalendar/core/locales/fr";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import { ref,onBeforeMount } from "vue";
+import bootstrap5Plugin from '@fullcalendar/bootstrap5';
+import { ref,onBeforeMount, nextTick } from "vue";
 import { storeToRefs } from "pinia";
 import { useMachinesStore } from "@/stores/machines";
 import { useReservationsStore } from "@/stores/reservations";
@@ -67,9 +68,12 @@ const {list:events} = storeToRefs(eventsStore);
 const managersStore = useManagersStore();
 const {objects:managers} = storeToRefs(managersStore);
 
+let calAPI = null;
 onBeforeMount(async () => {
   await useResourcesStore().fetchResources({min:true});
   loaded.value = true;
+  await nextTick();
+  calAPI = calendar.value.getApi();
 });
 function eventToCalEvent(event) {
   return {
@@ -114,11 +118,12 @@ function fetchCalEvents(dateInfo, success) {
   });
 }
 const calendarOptions = {
-  plugins: [timeGridPlugin],
+  plugins: [bootstrap5Plugin, timeGridPlugin],
   initialView: "timeGridWeek",
   locale: frLocale,
   height: "auto",
   weekends: false,
+  themeSystem: 'bootstrap5',
   views: {
     timeGridWeek: {
       type: "timeGrid",
@@ -127,6 +132,24 @@ const calendarOptions = {
       allDaySlot: false,
       titleFormat: { year: "numeric", month: "2-digit", day: "2-digit" },
     },
+  },
+  customButtons: {
+    prevWeek: {
+      text : "<",
+      click: function() {
+            calAPI.incrementDate( { days: -7 } );
+          }
+    },
+    nextWeek: {
+      text : ">",
+      click: function() {
+            calAPI.incrementDate( { days: 7 } );
+          }
+    }
+  },
+  headerToolbar : {
+  left: "title",
+  right: "today prevWeek,nextWeek",
   },
   events: fetchCalEvents,
 };

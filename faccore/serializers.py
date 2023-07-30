@@ -19,7 +19,7 @@ from django.contrib.auth import get_user_model
 
 from .app_settings import app_settings
 from .models import MachineModel, TrainingLevel, Supply, ReservationType, Machine, Manager, SupplyUsage, Reservation, Event
-
+from django_caldav_event.models import CalDavEvent
 
 class ChoicesField(serializers.Field):
     """Custom ChoiceField serializer field."""
@@ -90,6 +90,11 @@ class ManagerSerializer(serializers.ModelSerializer):
         model = Manager
         fields = ['id', 'user', 'calendar', 'name']
 
+class ManagerEventSerializer(serializers.ModelSerializer):
+    manager = serializers.ReadOnlyField(source='calendar.manager.pk')
+    class Meta:
+        model = CalDavEvent
+        fields = ['id', 'manager', 'dtstart', 'dtend']
 
 class ReservationTypeSerializer(serializers.ModelSerializer):
     class Meta:
