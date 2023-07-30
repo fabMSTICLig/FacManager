@@ -7,3 +7,4 @@ django-cas-ng
 drf-nested-routers
 python-dateutil
 django-auth-ldap==3.0.0
+ics

@@ -8,7 +8,8 @@
     <p>Cher utilisateur,</p>
     </br>
     </br>
-    <p>Votre réservation {{ resaname }} du {{ startdate }} a maintenant le status {{ status }}.</p>
+    <p>Votre réservation {{ reservation.reservation_type.name }} du {{ startdate }} a maintenant le status {{ status }}.</p>
+    <p><a href="{{ SITE_URL }}#/reservations/{{ reservation.id }}">{{ SITE_URL }}#/reservations/{{ reservation.id }}</a></p>
     <p>Vous serez notfié de tout changement.</p>
     </br>
     <p>Cordialement</p>

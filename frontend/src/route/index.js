@@ -40,9 +40,10 @@ const routes = [
     component: () => import("../pages/faccore/usages/UsagesList.vue"),
   },
   {
-    path: "/reservations",
+    path: "/reservations/:resaid?",
     name: "reservations",
     beforeEnter: requireAuth,
+    props: true,
     component: () => import("../pages/reservations/ReservationsView.vue"),
   },
   {

@@ -100,8 +100,7 @@ You should have received a copy of the GNU General Public License along with Fac
                 v-model="duration"
                 class="form-control"
                 type="number"
-                :min="reservationType.min_time_slot"
-                :step="reservationType.min_time_slot"
+                step="0.5"
                 required
               />
               <div class="input-group-append">

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+</head>
+<body>
+    <p>L'utilisateur <strong>{{reservation.user}}</strong> demande une réservation <strong>{{reservation.reservation_type.name}}</strong></p>
+    <p>{{startdate}}</p>
+    <p>{{enddate}}</p>
+    <p>Commentaire:</p>
+    {% autoescape on %}
+    <p>{{ reservation.commentary }}</p>
+    <p><a href="{{ SITE_URL }}#/reservations/{{ reservation.id }}">{{ SITE_URL }}#/reservations/{{ reservation.id }}</a></p>
+    {% endautoescape %}
+</body>

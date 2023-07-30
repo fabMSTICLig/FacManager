@@ -195,12 +195,12 @@ class ReservationSerializer(serializers.ModelSerializer):
                 notin = True
                 for slot in oh:
                     if(wd in slot['days_of_week']):
-                        notin = not (td > slot['start_time'] and td < slot['end_time'] )
+                        notin = not (td >= slot['start_time'] and td < slot['end_time'] )
                         if not notin:
                             break
                 if(notin):
                     raise serializers.ValidationError(
-                        "Must be in openning hours", code='invalid')
+                        "Must be in business hours", code='invalid')
         if not request.user.is_staff and Event.objects.filter(closing=True,
                 start_date__lt=start_date,
                 end_date__gt=start_date).count() > 0:

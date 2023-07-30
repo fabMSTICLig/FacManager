@@ -44,7 +44,7 @@ from django_caldav_event.models import CalDavEvent
 from facusers.permissions import IsAdminOrReadOnly, IsAdminOrIsSelf
 from facusers.models import Project
 from .app_settings import app_settings
-
+from .emails import NotifEmails
 
 class IsOwnerFilterBackend(filters.BaseFilterBackend):
     """
@@ -293,64 +293,6 @@ class ReservationViewSet(viewsets.ModelViewSet):
         else:
             return ReservationSerializer
 
-    def send_notif(self, reservation, user):
-        """
-        Send notification mail to the given user
-        """
-        status = str(OrderedDict(Reservation.STATUS)[reservation.status])
-        resaname = str(reservation.reservation_type.name)
-        startdate = reservation.start_date.strftime("%d/%m/%Y %H:%M:%S")
-        context = {"status": status, "resaname": resaname, "startdate": startdate}
-        subject = render_to_string(
-            template_name='emails/updateresa_subject.txt',
-            context=context
-        ).strip()
-        text_content = render_to_string(
-            template_name='emails/updateresa_content.txt',
-            context=context
-        )
-        html_content = render_to_string(
-            template_name='emails/updateresa_content.html',
-            context=context
-        )
-        msg = EmailMultiAlternatives(subject, text_content, email.utils.formataddr((settings.LABNAME, settings.EMAIL_SENDER)), [email.utils.formataddr((user.first_name + ' ' + user.last_name, user.email))])
-        msg.attach_alternative(html_content, "text/html")
-        # print(msg.message())
-        try:
-            msg.send()
-        except:
-            print("fail to send notif to " + user.email)
-
-    def send_admin_notif(self, reservation, user):
-        """
-        Send notification mail for the given user
-        """
-        status = OrderedDict(Reservation.STATUS)[reservation.status]
-        resaname = reservation.reservation_type.name
-        fullusername = str(reservation.user)
-        startdate = reservation.start_date.strftime("%d/%m/%Y %H:%M:%S")
-        enddate = reservation.end_date.strftime("%d/%m/%Y %H:%M:%S")
-        context = {"status": status, "resaname": resaname, "startdate": startdate, "enddate": enddate, "fullusername": fullusername, "commentary": str(reservation.commentary)}
-        subject = render_to_string(
-            template_name='emails/newresa_subject.txt',
-            context=context
-        ).strip()
-        text_content = render_to_string(
-            template_name='emails/newresa_content.txt',
-            context=context
-        )
-        html_content = render_to_string(
-            template_name='emails/newresa_content.html',
-            context=context
-        )
-        msg = EmailMultiAlternatives(subject, text_content, email.utils.formataddr((settings.LABNAME, settings.EMAIL_SENDER)), settings.EMAIL_ADMIN, reply_to=[email.utils.formataddr((user.first_name + ' ' + user.last_name, user.email))])
-        msg.attach_alternative(html_content, "text/html")
-        # print(msg.message())
-        try:
-            msg.send()
-        except:
-            print("fail to send notif to " + user.email)
-
     def create(self, request, *args, **kwargs):
         """
         If it's a standard user check the charter and the training level
@@ -381,8 +323,8 @@ class ReservationViewSet(viewsets.ModelViewSet):
         # if non admin set user to current user and send notifications
         if(not self.request.user.is_staff):
             instance = serializer.save(user=self.request.user)
-            self.send_admin_notif(instance, self.request.user)
-            self.send_notif(instance, self.request.user)
+            NotifEmails.send_admin_notif(instance, self.request.user)
+            NotifEmails.send_notif(instance, self.request.user)
         else:
             serializer.save()
 
@@ -405,7 +347,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
         statuschanged = request.data['status'] != status_dict[instance.status]
         self.perform_update(serializer)
         if(statuschanged):
-            self.send_notif(instance, instance.user)
+            NotifEmails.send_notif(instance, instance.user)
 
         if getattr(instance, '_prefetched_objects_cache', None):
             # If 'prefetch_related' has been applied to a queryset, we need to

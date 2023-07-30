@@ -1,0 +1,9 @@
+
+L'utilisateur {{ reservation.user }} demande une réservation {{ reservation.reservation_type.name }}
+{{ startdate }}
+{{ enddate }}
+
+Commentaire:
+{{ reservation.commentary }}
+
+{{ SITE_URL }}#/reservations/{{ reservation.id }}

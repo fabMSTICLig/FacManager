@@ -1,0 +1,10 @@
+Cher utilisateur,
+
+Votre réservation {{ reservation.reservation_type.name }} du {{ startdate }} a maintenant le status {{ status }}.
+
+{{ SITE_URL }}#/reservations/{{ reservation.id }}
+
+Vous serez notfié de tout changement.
+
+Cordialement
+L'équipe du fablab

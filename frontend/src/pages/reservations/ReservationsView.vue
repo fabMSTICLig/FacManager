@@ -102,6 +102,15 @@ const loaded = ref(false);
 const calendar = ref();
 let calAPI = null;
 
+const props = defineProps({
+  resaid: {
+    type: String,
+    required: false,
+    default: null,
+  },
+});
+
+
 const showCharter = ref(false);
 const charterUrl = import.meta.env.VITE_APP_CHARTER_URL;
 
@@ -150,9 +159,19 @@ onBeforeMount(async () => {
     });
   });
   calendarOptions.resources = resources.value;
+  let resa = null;
+  if(props.resaid)
+  {
+    resa = await reservationsStore.fetchSingle(props.resaid)
+  }
   loaded.value = true;
   await nextTick();
   calAPI = calendar.value.getApi();
+  if(resa)
+  {
+    calAPI.gotoDate(resa.start_date)
+    if (isAdmin.value || resa.own) resaUpdate(resa);
+  }
   if (!authUser.value.charter) showCharter.value = true;
 });
 
