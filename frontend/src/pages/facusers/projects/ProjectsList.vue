@@ -24,7 +24,7 @@ You should have received a copy of the GNU General Public License along with Fac
               <router-link
                 class="btn btn-primary float-end"
                 role="button"
-                :to="{ name: 'project', params: { projectid: 'new' } }"
+                :to="{ name: 'projectedit', params: { projectid: 'new' } }"
               >
                 Add
               </router-link>

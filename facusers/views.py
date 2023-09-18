@@ -18,6 +18,7 @@ from django.contrib.auth import get_user_model, login, logout
 from django.shortcuts import render
 from django.utils import timezone
 from django.conf import settings
+from django.db.models import Q
 from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import action
 from rest_framework.views import APIView
@@ -176,7 +177,7 @@ class OldFilterBackend(filters.BaseFilterBackend):
         try:
             if afterdate is not None:
                 afterdate=dateutil.parser.parse(afterdate)
-                query=query.filter(end_date__gte=afterdate)
+                query=query.filter((Q(end_date__gte=afterdate)|Q(end_date=None)))
         except:
             raise ParseError(detail="Wrong date format")
         return query

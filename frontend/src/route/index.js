@@ -92,7 +92,7 @@ const routes = [
           routeparam: "projectid",
           routedelete: "projects",
         },
-    component: RouterView,
+        component: RouterView,
         children: [
           {
             path: "edit",
