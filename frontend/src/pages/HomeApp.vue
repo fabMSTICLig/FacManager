@@ -43,6 +43,7 @@ import frLocale from "@fullcalendar/core/locales/fr";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import bootstrap5Plugin from '@fullcalendar/bootstrap5';
 import { ref,onBeforeMount, nextTick } from "vue";
+import { useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useMachinesStore } from "@/stores/machines";
 import { useReservationsStore } from "@/stores/reservations";
@@ -52,12 +53,13 @@ import { useResourcesStore } from "@/stores/resources";
 
 import HomeTop from "@/pages/HomeTop.vue";
 
-const RESA_COLORS = JSON.parse(import.meta.env.VITE_APP_RESA_COLORS);
+const router = useRouter();
 
 const calendar = ref();
 const loaded = ref(false);
 const datesQuery = ref({});
 
+let busyColor = "#dc3545"
 
 const reservationsStore = useReservationsStore();
 const {list:reservations} = storeToRefs(reservationsStore);
@@ -81,6 +83,7 @@ function eventToCalEvent(event) {
     start: event.start_date,
     end: event.end_date,
     id: "e" + event.id,
+    color: event.closing ? busyColor : "",
   };
 }
 function fetchCalEvents(dateInfo, success) {
@@ -100,7 +103,7 @@ function fetchCalEvents(dateInfo, success) {
           start: resa.start_date,
           end: resa.end_date,
           id: resa.id + "" + resa.machine,
-          color: RESA_COLORS[resa.status],
+          color: busyColor,
         });
       }
       if (resa.manager) {
@@ -109,7 +112,7 @@ function fetchCalEvents(dateInfo, success) {
           start: resa.start_date,
           end: resa.end_date,
           id: "m" + resa.id + "" + resa.manager,
-          color: RESA_COLORS[resa.status],
+          color: busyColor,
         });
       }
     });
@@ -145,11 +148,18 @@ const calendarOptions = {
       click: function() {
             calAPI.incrementDate( { days: 7 } );
           }
+    },
+    reservation: {
+      text : "Réservation",
+      click: function() {
+            router.push("reservations")
+          }
+    
     }
   },
   headerToolbar : {
   left: "title",
-  right: "today prevWeek,nextWeek",
+  right: "reservation today prevWeek,nextWeek",
   },
   events: fetchCalEvents,
 };
