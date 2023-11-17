@@ -221,6 +221,7 @@ You should have received a copy of the GNU General Public License along with Fac
                           v-model="addSU.quantity"
                           type="number"
                           min="0"
+                          step="0.01"
                           class="form-control"
                         /><span class="input-group-text">{{
                           getSupplyUnit(addSU.supply)
@@ -264,6 +265,7 @@ You should have received a copy of the GNU General Public License along with Fac
                           v-model="su.quantity"
                           type="number"
                           min="0"
+                          step="0.01"
                           class="form-control"
                           :readonly="!isAdmin && su.validated"
                         /><span class="input-group-text">{{

@@ -139,7 +139,15 @@ You should have received a copy of the GNU General Public License along with Fac
                   <th colspan="3"></th>
                 </tr>
                 <tr v-for="resa in rtype.usages" :key="resa.id">
-                  <td>{{ formatDate(resa.start_date) }}</td>
+                  <td>
+                    <router-link
+                      :to="{
+                        name: 'reservations',
+                        params: { resaid: resa.id },
+                      }"
+                      >{{ formatDate(resa.start_date) }}</router-link
+                    >
+                  </td>
                   <td>{{ resa.duration }}</td>
                   <td>{{ resa.status }}</td>
                   <td v-if="displayUser">{{ users[resa.user].username }}</td>
@@ -169,7 +177,17 @@ You should have received a copy of the GNU General Public License along with Fac
                   <th colspan="3"></th>
                 </tr>
                 <tr v-for="su in supply.usages" :key="su.id">
-                  <td>{{ formatDate(resadict[su.reservation].start_date) }}</td>
+                  <td>
+                    <router-link
+                      :to="{
+                        name: 'reservations',
+                        params: { resaid: resadict[su.reservation].id },
+                      }"
+                      >{{
+                        formatDate(resadict[su.reservation].start_date)
+                      }}</router-link
+                    >
+                  </td>
                   <td>{{ su.quantity + " " + supply.unit }}</td>
                   <td>
                     <svg v-show="su.validated" class="svg-icon-small">
@@ -234,26 +252,26 @@ const displayProject = ref(true);
 const fProject = ref(null);
 const fUser = ref(null);
 const fMinDate = ref(
-  ""+spacetime(new Date(new Date().getFullYear(), 0, 1)).format(
-    "{year}-{iso-month}-{date-pad}"
-  )
+  "" +
+    spacetime(new Date(new Date().getFullYear(), 0, 1)).format(
+      "{year}-{iso-month}-{date-pad}"
+    )
 );
 const fMaxDate = ref(
-  ""+spacetime(new Date(new Date().getFullYear(), 11, 31)).format(
-    "{year}-{iso-month}-{date-pad}"
-  )
+  "" +
+    spacetime(new Date(new Date().getFullYear(), 11, 31)).format(
+      "{year}-{iso-month}-{date-pad}"
+    )
 );
 const fType = ref(null);
 const fStatus = ref(null);
 const fValidated = ref(null);
 
-const { objects:resaTypes} =storeToRefs(reservationTypesStore);
-const { objects:projectsOptions} =storeToRefs(projectsStore);
+const { objects: resaTypes } = storeToRefs(reservationTypesStore);
+const { list: projectsOptions } = storeToRefs(projectsStore);
 
 async function findUser(query) {
-  let users = await usersStore.fetchList(
-    { search: query }
-  );
+  let users = await usersStore.fetchList({ search: query });
   return users.map((u) => {
     return {
       label: "@" + u.username + " " + u.first_name + " " + u.last_name,
