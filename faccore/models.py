@@ -85,12 +85,16 @@ class Supply(NamedModel):
     METRECUBE = 4
     GRAMME = 5
     PIECE = 6
+    MILLILITRE = 7
+    HOUR = 8
     UNITS = (
         (METRE, ("m")),
         (METRESQUARE, ("m2")),
         (METRECUBE, ("m3")),
         (GRAMME, ("g")),
         (PIECE, ("p")),
+        (MILLILITRE, ("ml")),
+        (HOUR, ("h")),
     )
     unit = models.SmallIntegerField(choices=UNITS, default=GRAMME)
 
