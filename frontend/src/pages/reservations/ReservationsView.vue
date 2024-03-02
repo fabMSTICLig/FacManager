@@ -260,7 +260,7 @@ function resaUpdated(resa) {
     if (resa.own) calEvent.setProp("borderColor", "red");
     let resids = [];
     if (resa.machine) resids.push(resa.machine);
-    if (resa.manager) resids.push(resa.manager);
+    if (resa.manager) resids.push("m"+resa.manager);
     calEvent.setResources(resids);
   }
 }
