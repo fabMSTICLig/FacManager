@@ -22,8 +22,8 @@ export const useAuthStore = defineStore("auth", () => {
     await pfc;
   }
 
-  async function login(login, password) {
-      return await axios.post("/login/", {login,password}, {baseURL: ""})
+  async function login(username, password) {
+      return await axios.post("/login/", {username,password}, {baseURL: ""})
   }
   async function logout() {
       return await axios.get("/logout/", {baseURL: ""})
