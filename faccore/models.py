@@ -56,7 +56,7 @@ class TrainingLevel(models.Model):
     machine_model = models.ForeignKey(MachineModel, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
-    level = models.PositiveIntegerField(default=0)
+    level = models.PositiveIntegerField(default=0,validators=[MinValueValidator(0)])
     need_manager = models.BooleanField(default=True)
 
     class Meta:

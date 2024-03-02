@@ -158,6 +158,7 @@ You should have received a copy of the GNU General Public License along with Fac
                           <input
                             v-model="tl.level"
                             type="number"
+                            min="0"
                             class="form-control"
                           />
                         </td>
@@ -215,8 +216,9 @@ You should have received a copy of the GNU General Public License along with Fac
 </template>
 
 <script setup>
-import { computed, ref, onBeforeMount } from "vue";
+import { computed, ref, onBeforeMount, inject } from "vue";
 import { useRoute } from "vue-router";
+import { storeToRefs } from "pinia";
 
 import useEditor from "@/composables/useEditor";
 
@@ -228,6 +230,7 @@ import { useMachineModelsStore } from "@/stores/machines";
 import { useResourcesStore } from "@/stores/resources";
 
 import DynList from "@/components/ui/DynList.vue";
+const showModal = inject("show");
 
 const { fetchList: fetchOrganizations } = useOrganizationsStore();
 const { fetchList: fetchProjects } = useProjectsStore();
@@ -262,10 +265,11 @@ const cardName = computed(() =>
 
 const userTrainingLevels = ref([]);
 
-const { objects: machineModels } = useMachineModelsStore();
+const { objects: machineModels } = storeToRefs(useMachineModelsStore());
 
-function updateTLs() {
-  tlStore.bulkUpdate(object.value.id, userTrainingLevels.value);
+async function updateTLs() {
+  await tlStore.bulkUpdate(object.value.id, Object.values(userTrainingLevels.value));
+  showModal({ content: "Training Levels mis à jour" });
 }
 
 const route = useRoute();
@@ -276,7 +280,6 @@ onBeforeMount(async () => {
 
   if (object.value.id) {
     const data = await tlStore.fetchList({}, "/users/" + object.value.id + "/");
-
     userTrainingLevels.value = data;
   }
 });

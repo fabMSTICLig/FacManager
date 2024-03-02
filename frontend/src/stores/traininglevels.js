@@ -19,7 +19,7 @@ export const useTrainingLevelsStore = defineStore("training_levels", () => {
     });
     count.value = data.count;
 
-    return data.results;
+    return data;
   }
 
   async function fetchList(params = {}, prefix) {
@@ -30,7 +30,7 @@ export const useTrainingLevelsStore = defineStore("training_levels", () => {
     });
     count.value = data.count;
 
-    return data.results;
+    return data;
   }
   async function fetchSingle(machine_model, prefix = "") {
     if (Object.keys(objects.value).indexOf(machine_model) > -1)

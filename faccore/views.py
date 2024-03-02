@@ -261,7 +261,7 @@ class TrainingLevelView(APIView):
 
         tls = TrainingLevel.objects.filter(user=user_pk)
         serializer = TrainingLevelSerializer(instance=tls, data=request.data, many=True)
-        serializer.is_valid()
+        serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
 
