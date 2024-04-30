@@ -52,4 +52,4 @@ class ReservationTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Reservation)
 class ReservationAdmin(admin.ModelAdmin):
-    pass
+    readonly_fields=["created_date"]

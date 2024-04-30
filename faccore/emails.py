@@ -39,10 +39,10 @@ class NotifEmails:
                 email.utils.formataddr((
                     settings.LABNAME,
                     settings.EMAIL_SENDER)),
-                [email.utils.formataddr((
+                email.utils.formataddr((
                     user.first_name +
                     ' ' +
-                    user.last_name, user.email))])
+                    user.last_name, user.email)))
         msg.attach_alternative(html_content, "text/html")
         # print(msg.message())
         try:
@@ -83,7 +83,7 @@ class NotifEmails:
                 text_content,
                 email.utils.formataddr((settings.LABNAME,
                     settings.EMAIL_SENDER)),
-                [settings.EMAIL_ADMIN],
+                settings.EMAIL_ADMIN,
                 reply_to=[email.utils.formataddr((user.first_name +
                     ' ' + user.last_name, user.email))])
         msg.attach_alternative(html_content, "text/html")
@@ -98,6 +98,6 @@ class NotifEmails:
         #print(msg.message())
         try:
             msg.send()
-        except:
+        except BaseException as e:
             print("fail to send notif to " + str(sendto))
 
