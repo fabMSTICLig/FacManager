@@ -39,10 +39,10 @@ class NotifEmails:
                 email.utils.formataddr((
                     settings.LABNAME,
                     settings.EMAIL_SENDER)),
-                email.utils.formataddr((
+                [email.utils.formataddr((
                     user.first_name +
                     ' ' +
-                    user.last_name, user.email)))
+                    user.last_name, user.email))])
         msg.attach_alternative(html_content, "text/html")
         # print(msg.message())
         try:
