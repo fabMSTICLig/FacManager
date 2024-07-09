@@ -80,6 +80,7 @@ import bootstrap5Plugin from '@fullcalendar/bootstrap5';
 import { ref, nextTick, onBeforeMount } from "vue";
 import { storeToRefs } from "pinia";
 import { useAuthStore } from "@/stores/auth";
+import { useTrainingLevelsStore } from "@/stores/traininglevels";
 import { useResourcesStore } from "@/stores/resources";
 import { useMachineModelsStore } from "@/stores/machines";
 import {
@@ -95,6 +96,7 @@ import Modal from "@/plugins/modal";
 
 const authStore = useAuthStore();
 const { authUser, isAdmin } = storeToRefs(authStore);
+const trainingLevelsStore = useTrainingLevelsStore();
 
 const RESA_COLORS = JSON.parse(import.meta.env.VITE_APP_RESA_COLORS);
 
@@ -164,6 +166,7 @@ onBeforeMount(async () => {
   {
     resa = await reservationsStore.fetchSingle(props.resaid)
   }
+  await trainingLevelsStore.fetchList({}, "/users/" + authUser.value.id + "/");
   loaded.value = true;
   await nextTick();
   calAPI = calendar.value.getApi();
@@ -173,6 +176,7 @@ onBeforeMount(async () => {
     if (isAdmin.value || resa.own) resaUpdate(resa);
   }
   if (!authUser.value.charter) showCharter.value = true;
+
 });
 
 function eventToCalEvent(event) {

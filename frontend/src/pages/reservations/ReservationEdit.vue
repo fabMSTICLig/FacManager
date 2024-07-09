@@ -426,7 +426,7 @@ const allowedTypes = computed(() => {
     return resaTypes.value.filter((rt) => {
       if (rt.need_manager) return true;
       else {
-        if (rt.machine) return !tls.value[rt.machine].need_manager;
+        if (rt.machine_model) return !tls.value[rt.machine_model].need_manager;
       }
     });
   }
