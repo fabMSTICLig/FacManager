@@ -66,7 +66,6 @@ You should have received a copy of the GNU General Public License along with Fac
                     v-model="object.start_date"
                     class="form-control"
                     type="date"
-                    required
                   />
                 </div>
                 <div class="col-12">
@@ -76,7 +75,6 @@ You should have received a copy of the GNU General Public License along with Fac
                     v-model="object.end_date"
                     class="form-control"
                     type="date"
-                    required
                   />
                 </div>
 
