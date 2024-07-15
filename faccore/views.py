@@ -306,11 +306,10 @@ class ReservationViewSet(viewsets.ModelViewSet):
                     "You are not allowed to specify the status")
             rtype = ReservationType.objects.get(pk=request.data['reservation_type'])
             if not rtype.need_manager:
-                for model in rtype.needs.all():
-                    tl = TrainingLevel.objects.get(machine_model=model, user=request.user)
-                    if tl.need_manager:
-                        raise serializers.ValidationError(
-                            "You need a manager for this machine, choose an initiation", code="invalid")
+                tl = TrainingLevel.objects.get(machine_model=rtype.machine_model, user=request.user)
+                if tl.need_manager:
+                    raise serializers.ValidationError(
+                        "You need a manager for this machine, choose an initiation", code="invalid")
 
         serializer = self.get_serializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)

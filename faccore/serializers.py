@@ -202,7 +202,7 @@ class ReservationSerializer(serializers.ModelSerializer):
                     raise serializers.ValidationError(
                         "Must be in business hours", code='invalid')
         if not request.user.is_staff and Event.objects.filter(closing=True,
-                start_date__lt=start_date,
+                start_date__lte=start_date,
                 end_date__gt=start_date).count() > 0:
                 raise serializers.ValidationError(
                     "Closed due to an event", code='invalid')
