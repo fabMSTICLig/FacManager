@@ -10,6 +10,10 @@ A web application in order to manage the reservation of the machines and the man
 - Python 3
 - Node JS
 
+```
+sudo apt-get install libsasl2-dev python-dev-is-python3 libldap2-dev libssl-dev
+```
+
 ### Backend Step Django
 
 ```
