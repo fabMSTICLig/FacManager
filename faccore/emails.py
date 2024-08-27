@@ -18,6 +18,7 @@ class NotifEmails:
         status = str(OrderedDict(Reservation.STATUS)[reservation.status])
         startdate = reservation.start_date.strftime("%d/%m/%Y %H:%M:%S")
         context = {
+                "SITE_URL": settings.SITE_URL,
                 "reservation":reservation,
                 "status": status,
                 "startdate": startdate}
