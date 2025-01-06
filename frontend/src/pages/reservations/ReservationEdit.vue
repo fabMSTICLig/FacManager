@@ -519,6 +519,10 @@ function newResa(startDate, endDate, resource) {
   if ("model" in resource.extendedProps)
     object.value.machine = parseInt(resource.id);
   else object.value.machine = null;
+  if(authUser.value.projects.length)
+  {
+    object.value.project = authUser.value.projects[0]
+  }
   initResa();
 }
 

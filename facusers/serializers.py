@@ -122,3 +122,12 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = '__all__'
+
+    def to_internal_value(self, data):
+        # check for "end_date": "" and convert to None
+        # This must be done before .validate()
+        if data['end_date'] == '':
+            data['end_date'] = None
+        if data['start_date'] == '':
+            data['start_date'] = None
+        return super(ProjectSerializer, self).to_internal_value(data)
