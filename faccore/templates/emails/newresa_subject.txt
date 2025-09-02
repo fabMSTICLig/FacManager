@@ -1,1 +1,1 @@
-[FacManager] Nouvelle reservation {{ reservation.reservation_type.name }} {% if reservation.manager %}avec {{reservation.manager}} {% endif -%}de  {{ reservation.user }}
+[FacManager] Nouvelle reservation {{ reservation.reservation_type.name }} {% if reservation.manager %}avec {{reservation.manager}} {% endif %}de  {{ reservation.user }}
