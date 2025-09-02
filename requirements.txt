@@ -1,12 +1,12 @@
-Django<=5.0
-gunicorn<23.0.0
+Django
+gunicorn<24.0.0
 djangorestframework<4.0
-django-filter<25.0
+django-filter<26.0
 django-su==1.0.0
 django-cas-ng<6.0
 drf-nested-routers<1.0
 python-dateutil
-django-auth-ldap<5.0
+django-auth-ldap<6.0
 ics
 cryptography
 caldav
