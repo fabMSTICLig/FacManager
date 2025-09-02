@@ -1,5 +1,5 @@
 
-L'utilisateur {{ reservation.user }} demande une réservation {{ reservation.reservation_type.name }}
+L'utilisateur {{ reservation.user }} demande une réservation {{ reservation.reservation_type.name }}{% if reservation.manager %} avec {{reservation.manager}}{% endif -%}
 {{ startdate }}
 {{ enddate }}
 
