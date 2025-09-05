@@ -69,7 +69,7 @@ You should have received a copy of the GNU General Public License along with Fac
           <div class="mb-3">
             <label for="resa-startdate">Start date:</label>
             <div class="form-row">
-              <div class="col">
+              <div class="col input-group">
                 <input
                   id="resa-startdate"
                   v-model="date_date"
@@ -77,6 +77,13 @@ You should have received a copy of the GNU General Public License along with Fac
                   type="date"
                   required
                 />
+                <button
+                    v-if="isAdmin && !object.id"
+                    class="btn btn-sm input-group-append"
+                    :class="[willBulk ? 'btn-success' : 'btn-danger']"
+                    type="button"
+                    @click="showBulk=true"
+                    >Bulk</button>
               </div>
               <div class="col">
                 <input
@@ -337,6 +344,27 @@ You should have received a copy of the GNU General Public License along with Fac
           Ok
         </button>
       </div>
+      <modal
+      id="modal-bulk"
+      title="List of date"
+      :show="showBulk"
+      :resolve="() => (showBulk = false)"
+    >
+      <div class="mb-3">
+            <label for="bulktxt">List of date format 2025-05-30, one per line</label>
+            <textarea
+              id="bulktxt"
+              v-model="bulkTxt"
+              class="form-control"
+              placeholder="2025-05-23"
+              rows="10"
+            ></textarea>
+            <div v-show="wrongBulk" class="alert alert-warning">
+            <strong>Warning!</strong> Wrong format for bulk dates.
+          </div>
+          </div>
+    </modal>
+
     </form>
   </modal>
 </template>
@@ -386,6 +414,9 @@ const show = ref(false);
 const waiting = ref(false);
 const typeInput = ref();
 const errors = ref([]);
+
+const showBulk = ref(false);
+const bulkTxt = ref("");
 
 const object = ref({ uses: [] });
 
@@ -452,6 +483,7 @@ const date_date = computed({
     object.value.start_date = spacetime(value)
       .time(spacetime(object.value.start_date).time())
       .format("iso");
+    bulkTxt.value=spacetime(value).format("iso-short")
     object.value.end_date = spacetime(value)
       .time(spacetime(object.value.end_date).time())
       .format("iso");
@@ -494,6 +526,21 @@ const duration = computed({
   },
 });
 
+const risodate = /\d{4}-[01]\d-[0-3]\d/;
+
+const wrongBulk = computed(() => {
+  let lines = bulkTxt.value.split("\n");
+  let ok = true;
+  for(var i = 0;i < lines.length;i++){
+    ok = ok && risodate.test(lines[i])
+  }
+  return !ok
+});
+
+const willBulk = computed(() => {
+  return  !object.value.id && !wrongBulk.value && bulkTxt.value.split("\n").length > 1 && object.value.status == "Accepted";
+});
+
 const { list: managers } = storeToRefs(managersStore);
 
 const { objects: machineModels } = storeToRefs(machineModelsStore);
@@ -512,6 +559,7 @@ function newResa(startDate, endDate, resource) {
     end_date: endDate,
     manager: null,
   };
+  bulkTxt.value=spacetime(startDate).format("iso-short")
   if (isAdmin.value) {
     object.value.status = "Accepted";
   }
@@ -567,19 +615,42 @@ async function handleSubmit() {
   waiting.value = true;
   if(!reservationType.value.machine_model) object.value.machine=null;
   if(!reservationType.value.need_manager) object.value.manager=null;
-  try {
-    if (object.value.id) {
-      emit("updated", await store.update(object.value.id, object.value));
-    } else {
-      emit("created", await store.create(object.value));
+  if(willBulk.value)
+  {
+    let lines = bulkTxt.value.split("\n");
+    var listresa = []
+    for(var i = 0;i < lines.length;i++){
+    var value = lines[i]
+    object.value.start_date = spacetime(value)
+      .time(spacetime(object.value.start_date).time())
+      .format("iso");
+    object.value.end_date = spacetime(value)
+      .time(spacetime(object.value.end_date).time())
+      .format("iso");
+      try{
+        listresa.push(await store.create(object.value))
+      } catch (e) {
+        console.log(e)
+      }
     }
+    emit("created", listresa);
     show.value = false;
-  } catch (e) {
-    if (e.response.status == 400)
-      if (e.response.data.non_field_errors)
-        errors.value = errors.value.concat(e.response.data.non_field_errors);
-      else if (Array.isArray(e.response.data))
-        errors.value = errors.value.concat(e.response.data);
+    
+  } else {
+    try {
+      if (object.value.id) {
+        emit("updated", await store.update(object.value.id, object.value));
+      } else {
+          emit("created", await store.create(object.value));
+      }
+      show.value = false;
+    } catch (e) {
+      if (e.response.status == 400)
+        if (e.response.data.non_field_errors)
+          errors.value = errors.value.concat(e.response.data.non_field_errors);
+        else if (Array.isArray(e.response.data))
+          errors.value = errors.value.concat(e.response.data);
+    }
   }
   waiting.value = false;
 }

@@ -246,7 +246,16 @@ function resaInterfaces(interfaces) {
 }
 
 function resaCreated(resa) {
-  calAPI.addEvent(resaToCalEvent(resa), true);
+  if (Array.isArray(resa))
+  {
+    for(var i = 0;i <resa.length;i++){
+      calAPI.addEvent(resaToCalEvent(resa[i]), true);
+    }
+  }
+  else
+  {
+    calAPI.addEvent(resaToCalEvent(resa), true);
+  }
 }
 
 function resaUpdated(resa) {
@@ -282,7 +291,16 @@ function eventInterfaces(interfaces) {
 }
 
 function eventCreated(event) {
+  if (Array.isArray(event))
+  {
+    for(var i = 0;i <event.length;i++){
+      calAPI.addEvent(eventToCalEvent(event[i]), true);
+    }
+  }
+  else
+  {
   calAPI.addEvent(eventToCalEvent(event), true);
+  }
 }
 
 function eventUpdated(event) {
