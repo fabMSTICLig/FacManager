@@ -100,7 +100,7 @@ You should have received a copy of the GNU General Public License along with Fac
           <label for="event-desc">Description (Optional):</label>
           <textarea
             id="event-desc"
-            v-model="object.commentary"
+            v-model="object.description"
             class="form-control"
             placeholder="Description"
           ></textarea>
