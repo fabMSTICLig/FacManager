@@ -167,7 +167,7 @@ class Reservation(models.Model):
         user making this reservation
     project : Project, optional
         Project in which the reservation is took
-        date : datetime
+    start_date : datetime
         Starting date and time of this reservation
     end_date : datetime
         Ending date and time of this reservation
