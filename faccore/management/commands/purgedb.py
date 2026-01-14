@@ -28,6 +28,6 @@ class Command(BaseCommand):
         parser.add_argument("date", type=str)
 
     def handle(self, *args, **options):
-        purgedate = datetime.date.fromisoformat(option["date"])
+        purgedate = datetime.date.fromisoformat(options["date"])
         print(purgedate)
         print(Reservation.objects.filter(start_date__lte = purgedate).delete())
