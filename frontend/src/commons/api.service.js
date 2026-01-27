@@ -11,7 +11,7 @@
  * You should have received a copy of the GNU General Public License along with FacManager. If not, see <https://www.gnu.org/licenses/>
  *
  * @author Germain Lemasson
-*/
+ */
 
 import axios from "axios";
 

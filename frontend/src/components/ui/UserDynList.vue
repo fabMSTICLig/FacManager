@@ -1,7 +1,10 @@
 <template>
   <div>
     <div v-if="!readonly">
-      <div class="input-group" style="height: 43px">
+      <div
+        class="input-group"
+        style="height: 43px"
+      >
         <Multiselect
           ref="mtselect"
           :model-value="valuesIntern"
@@ -107,7 +110,7 @@ function select(o) {
   valuesIntern.value.push(o);
   emit(
     "update:modelValue",
-    valuesIntern.value.map((o) => o.id)
+    valuesIntern.value.map((o) => o.id),
   );
 }
 function removeItem(item) {
@@ -115,7 +118,7 @@ function removeItem(item) {
   if (index != -1) valuesIntern.value.splice(index, 1);
   emit(
     "update:modelValue",
-    valuesIntern.value.map((o) => o.id)
+    valuesIntern.value.map((o) => o.id),
   );
 }
 </script>

@@ -84,10 +84,12 @@ const optionsLoading = ref(false);
 const isArray = computed(() => Array.isArray(props.resource));
 onMounted(async () => {
   if (!isArray.value) {
-    valuesIntern.value = await props.resource({ ids: props.modelValue.join(",") });
+    valuesIntern.value = await props.resource({
+      ids: props.modelValue.join(","),
+    });
   } else {
     valuesIntern.value = props.resource.filter((o) =>
-      props.modelValue.includes(o.id)
+      props.modelValue.includes(o.id),
     );
   }
 });
@@ -123,16 +125,16 @@ function select(o) {
   valuesIntern.value.push(o);
   emit(
     "update:modelValue",
-    valuesIntern.value.map((o) => o.id)
+    valuesIntern.value.map((o) => o.id),
   );
-  if(isArray.value) mtselect.value.refreshOptions();
+  if (isArray.value) mtselect.value.refreshOptions();
 }
 function removeItem(item) {
   let index = valuesIntern.value.findIndex((o) => o.id == item.id);
   if (index != -1) valuesIntern.value.splice(index, 1);
   emit(
     "update:modelValue",
-    valuesIntern.value.map((o) => o.id)
+    valuesIntern.value.map((o) => o.id),
   );
 }
 </script>

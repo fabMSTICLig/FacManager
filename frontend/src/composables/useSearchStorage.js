@@ -5,7 +5,7 @@ export default function useSearchStorage(
   fetch,
   defaults,
   currentPage,
-  perPage
+  perPage,
 ) {
   function ssGetOrDefault(key, defaultValue) {
     return sessionStorage.getItem(key)
@@ -27,12 +27,12 @@ export default function useSearchStorage(
     if ("_set" in defaults[key])
       defaults[key]._set(
         ssGetOrDefault(name + "_" + key, defaults[key].value),
-        true
+        true,
       );
     else
       defaults[key].value = ssGetOrDefault(
         name + "_" + key,
-        defaults[key].value
+        defaults[key].value,
       );
     setWatch(key, defaults[key]);
     refsList.push(defaults[key]);

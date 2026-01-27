@@ -19,7 +19,7 @@ export const useResourcesStore = defineStore("resources", () => {
         "/static/resources" + (payload.min ? ".min" : "") + ".json",
         {
           baseURL: "",
-        }
+        },
       );
     } catch (error) {
       if (error.response.status == 404) {
@@ -28,15 +28,15 @@ export const useResourcesStore = defineStore("resources", () => {
     }
     const data = response.data;
 
-    minHour.value = data['business_hours']['min_hour'];
-    maxHour.value = data['business_hours']['max_hour'];
-    businessHours.value = data['business_hours']['slots'].map(slot =>{
+    minHour.value = data["business_hours"]["min_hour"];
+    maxHour.value = data["business_hours"]["max_hour"];
+    businessHours.value = data["business_hours"]["slots"].map((slot) => {
       return {
-        'daysOfWeek': slot['days_of_week'],
-        'startTime': slot['start_time'],
-        'endTime': slot['end_time'],
-      }
-    })
+        daysOfWeek: slot["days_of_week"],
+        startTime: slot["start_time"],
+        endTime: slot["end_time"],
+      };
+    });
 
     const machineStore = useMachinesStore();
     machineStore.setData({

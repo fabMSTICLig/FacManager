@@ -4,12 +4,40 @@ import useCRUDStore from "./useCRUDStore";
 import ApiService from "@/commons/api.service";
 
 export const useManagersStore = defineStore("managers", () => {
+  const { objects, count, list, getById, fetchSingle } =
+    useCRUDStore("managers");
 
-  const events = ref(null);
-  async function fetchEvents(params = {}) {
-    const { data } = await ApiService.query("managers/events", params);
-    events.value=data;
-    return data;
+  async function fetchList(params = {}, prefix = "") {
+    const { data } = await ApiService.query(prefix + resource, params);
+    setData(data);
+    return data.results;
   }
-  return {...useCRUDStore("managers"), events, fetchEvents}
+
+  function setData(data) {
+    objects.value = {};
+    data.results.forEach((m) => {
+      objects.value[m["id"].toString()] = {
+        id: m["id"],
+        user: m["user"],
+        name: m["name"],
+        businessHours: m["business_hours"].map((slot) => {
+          return {
+            daysOfWeek: slot["days_of_week"],
+            startTime: slot["start_time"],
+            endTime: slot["end_time"],
+          };
+        }),
+      };
+    });
+    count.value = data.count;
+  }
+  return {
+    objects,
+    count,
+    list,
+    getById,
+    fetchList,
+    fetchSingle,
+    setData,
+  };
 });

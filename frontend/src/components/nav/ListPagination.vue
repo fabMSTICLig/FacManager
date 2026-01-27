@@ -3,7 +3,10 @@
   <!--<nav v-if="!(isInFirstPage && isInLastPage) && totalPages != 0">-->
   <nav>
     <ul class="pagination">
-      <li class="page-item" :class="{ disabled: isInFirstPage }">
+      <li
+        class="page-item"
+        :class="{ disabled: isInFirstPage }"
+      >
         <button
           class="page-link"
           aria-label="Go to first page"
@@ -13,7 +16,10 @@
         </button>
       </li>
 
-      <li class="page-item" :class="{ disabled: isInFirstPage }">
+      <li
+        class="page-item"
+        :class="{ disabled: isInFirstPage }"
+      >
         <button
           class="page-link"
           aria-label="Go to previous page"
@@ -38,7 +44,10 @@
         </button>
       </li>
 
-      <li class="page-item" :class="{ disabled: isInLastPage }">
+      <li
+        class="page-item"
+        :class="{ disabled: isInLastPage }"
+      >
         <button
           class="page-link"
           aria-label="Go to next page"
@@ -48,7 +57,10 @@
         </button>
       </li>
 
-      <li class="page-item" :class="{ disabled: isInLastPage }">
+      <li
+        class="page-item"
+        :class="{ disabled: isInLastPage }"
+      >
         <button
           class="page-link"
           aria-label="Go to last page"
@@ -101,7 +113,7 @@ const startPage = computed(() => {
 const endPage = computed(() => {
   return Math.min(
     startPage.value + props.maxVisibleButtons - 1,
-    totalPages.value
+    totalPages.value,
   );
 });
 const pages = computed(() => {

@@ -16,12 +16,18 @@ You should have received a copy of the GNU General Public License along with Fac
 <template>
   <div class="row">
     <div class="col-12">
-      <div v-if="object" class="card">
+      <div
+        v-if="object"
+        class="card"
+      >
         <div class="card-header row justify-content-between">
           <h3 class="col-auto">
             Reservation Types: <strong>{{ cardName }}</strong>
           </h3>
-          <div class="col-auto btn-group float-end" role="group">
+          <div
+            class="col-auto btn-group float-end"
+            role="group"
+          >
             <button
               v-if="!isNew"
               class="btn btn-danger"
@@ -33,20 +39,28 @@ You should have received a copy of the GNU General Public License along with Fac
           </div>
         </div>
         <div class="card-body">
-          <form ref="editorForm" class="row g-3">
+          <form
+            ref="editorForm"
+            class="row g-3"
+          >
             <div class="col-12">
-              <label class="form-label" for="name">Name</label>
+              <label
+                class="form-label"
+                for="name"
+              >Name</label>
               <input
                 id="name"
                 v-model="object.name"
                 class="form-control"
                 type="text"
                 required
-              />
+              >
             </div>
             <div class="mb-3">
-              <label class="form-label" for="description">Description</label
-              ><textarea
+              <label
+                class="form-label"
+                for="description"
+              >Description</label><textarea
                 id="description"
                 v-model="object.description"
                 rows="5"
@@ -61,7 +75,9 @@ You should have received a copy of the GNU General Public License along with Fac
                   v-model="object.machine_model"
                   class="form-control"
                 >
-                  <option :value="null">None</option>
+                  <option :value="null">
+                    None
+                  </option>
                   <option
                     v-for="machine in machine_models"
                     :key="machine.id"
@@ -78,10 +94,11 @@ You should have received a copy of the GNU General Public License along with Fac
                 v-model="object.need_manager"
                 type="checkbox"
                 class="form-check-input"
-              />
-              <label class="form-check-label" for="check-active"
-                >Need Manager</label
               >
+              <label
+                class="form-check-label"
+                for="check-active"
+              >Need Manager</label>
             </div>
             <div class="mb-3">
               <label for="speman">Specific Manager:</label>
@@ -91,14 +108,23 @@ You should have received a copy of the GNU General Public License along with Fac
                   v-model="object.spe_manager"
                   class="form-control"
                 >
-                  <option :value="null">None</option>
-                  <option v-for="man in managers" :key="man.id" :value="man.id">
+                  <option :value="null">
+                    None
+                  </option>
+                  <option
+                    v-for="man in managers"
+                    :key="man.id"
+                    :value="man.id"
+                  >
                     {{ man.name }}
                   </option>
                 </select>
               </div>
             </div>
-            <div class="btn-group col-auto" role="group">
+            <div
+              class="btn-group col-auto"
+              role="group"
+            >
               <button
                 v-if="isNew"
                 class="btn btn-primary"
@@ -161,11 +187,11 @@ const {
     name: "",
     need_manager: false,
   },
-  { name: "resatypes" }
+  { name: "resatypes" },
 );
 
 const cardName = computed(() =>
-  isNew.value ? "New reservation type" : object.value.name
+  isNew.value ? "New reservation type" : object.value.name,
 );
 const route = useRoute();
 

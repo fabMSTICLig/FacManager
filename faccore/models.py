@@ -18,8 +18,6 @@ from django.core.validators import MinValueValidator
 from django.conf import settings
 from facusers.models import Project
 
-from django_caldav_event.models import CalendarInfos
-
 class NamedModel(models.Model):
     """An abstract class used for model with a name """
 
@@ -109,15 +107,11 @@ class Manager(models.Model):
     Represent a Manager
     ----------
     """
-    calendar = models.OneToOneField(
-        CalendarInfos,
-        on_delete=models.CASCADE,
-        related_name='manager'
-    )
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE,
                              primary_key=True,
                              related_name='manager')
+    business_hours = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.user.first_name

@@ -22,15 +22,30 @@ You should have received a copy of the GNU General Public License along with Fac
     :resolve="resolveModal"
     hide-footer
   >
-    <form ref="form" @submit.prevent="handleSubmit">
-      <div v-if="errors" ref="event_errors" class="invalid-feedback d-block">
+    <form
+      ref="form"
+      @submit.prevent="handleSubmit"
+    >
+      <div
+        v-if="errors"
+        ref="event_errors"
+        class="invalid-feedback d-block"
+      >
         <ul class="error-messages">
-          <li v-for="e in errors" :key="e">{{ e }}</li>
+          <li
+            v-for="e in errors"
+            :key="e"
+          >
+            {{ e }}
+          </li>
         </ul>
       </div>
       <fieldset>
         <div class="mb-3">
-          <label class="form-label" for="name">Name</label>
+          <label
+            class="form-label"
+            for="name"
+          >Name</label>
           <input
             id="name"
             ref="inputname"
@@ -38,7 +53,7 @@ You should have received a copy of the GNU General Public License along with Fac
             class="form-control"
             type="text"
             required
-          />
+          >
         </div>
 
         <div class="mb-3">
@@ -51,13 +66,15 @@ You should have received a copy of the GNU General Public License along with Fac
                 class="form-control"
                 type="date"
                 required
-              /><button
-                  v-if="!object.id"
-                  class="btn btn-sm input-group-append"
-                  :class="[willBulk ? 'btn-success' : 'btn-danger']"
-                  type="button"
-                  @click="showBulk=true"
-                  >Bulk</button>
+              ><button
+                v-if="!object.id"
+                class="btn btn-sm input-group-append"
+                :class="[willBulk ? 'btn-success' : 'btn-danger']"
+                type="button"
+                @click="showBulk = true"
+              >
+                Bulk
+              </button>
             </div>
             <div class="col">
               <input
@@ -67,7 +84,7 @@ You should have received a copy of the GNU General Public License along with Fac
                 type="time"
                 :step="MIN_START_MINUTE"
                 required
-              />
+              >
             </div>
           </div>
         </div>
@@ -81,7 +98,7 @@ You should have received a copy of the GNU General Public License along with Fac
                 class="form-control"
                 type="date"
                 required
-              />
+              >
             </div>
             <div class="col">
               <input
@@ -91,7 +108,7 @@ You should have received a copy of the GNU General Public License along with Fac
                 type="time"
                 :step="MIN_START_MINUTE"
                 required
-              />
+              >
             </div>
           </div>
         </div>
@@ -103,18 +120,19 @@ You should have received a copy of the GNU General Public License along with Fac
             v-model="object.description"
             class="form-control"
             placeholder="Description"
-          ></textarea>
+          />
         </div>
         <div class="mb-3 form-check form-switch">
-          <label class="form-check-label" for="check-closing"
-            >Fermeture</label
-          >
+          <label
+            class="form-check-label"
+            for="check-closing"
+          >Fermeture</label>
           <input
             id="check-closing"
             v-model="object.closing"
             type="checkbox"
             class="form-check-input"
-          />
+          >
         </div>
       </fieldset>
       <div>
@@ -127,33 +145,44 @@ You should have received a copy of the GNU General Public License along with Fac
           Delete
         </button>
 
-        <button class="btn btn-secondary" type="button" @click="show = false">
+        <button
+          class="btn btn-secondary"
+          type="button"
+          @click="show = false"
+        >
           Cancel
         </button>
-        <button type="submit" :disabled="waiting" class="btn btn-primary">
+        <button
+          type="submit"
+          :disabled="waiting"
+          class="btn btn-primary"
+        >
           Ok
         </button>
       </div>
       <modal
-      id="modal-bulk"
-      title="List of date"
-      :show="showBulk"
-      :resolve="() => (showBulk = false)"
-    >
-      <div class="mb-3">
-            <label for="bulktxt">List of date format 2025-05-30, one per line</label>
-            <textarea
-              id="bulktxt"
-              v-model="bulkTxt"
-              class="form-control"
-              placeholder="2025-05-23"
-              rows="10"
-            ></textarea>
-            <div v-show="wrongBulk" class="alert alert-warning">
+        id="modal-bulk"
+        title="List of date"
+        :show="showBulk"
+        :resolve="() => (showBulk = false)"
+      >
+        <div class="mb-3">
+          <label for="bulktxt">List of date format 2025-05-30, one per line</label>
+          <textarea
+            id="bulktxt"
+            v-model="bulkTxt"
+            class="form-control"
+            placeholder="2025-05-23"
+            rows="10"
+          />
+          <div
+            v-show="wrongBulk"
+            class="alert alert-warning"
+          >
             <strong>Warning!</strong> Wrong format for bulk dates.
           </div>
-          </div>
-    </modal>
+        </div>
+      </modal>
     </form>
   </modal>
 </template>
@@ -182,23 +211,22 @@ function resolveModal() {
   show.value = false;
 }
 
-watch(show, async ()=>{
-  if(show.value)
-  {
-    await nextTick()
-    inputname.value.focus()
-    inputname.value.scrollIntoView(false)
+watch(show, async () => {
+  if (show.value) {
+    await nextTick();
+    inputname.value.focus();
+    inputname.value.scrollIntoView(false);
   }
-})
+});
 
 const date_date = computed({
   get: function () {
     return spacetime(object.value.start_date).format(
-      "{year}-{iso-month}-{date-pad}"
+      "{year}-{iso-month}-{date-pad}",
     );
   },
   set: function (value) {
-    bulkTxt.value=spacetime(value).format("iso-short")
+    bulkTxt.value = spacetime(value).format("iso-short");
     object.value.start_date = spacetime(value)
       .time(spacetime(object.value.start_date).time())
       .format("iso");
@@ -207,7 +235,7 @@ const date_date = computed({
 const date_time = computed({
   get: function () {
     return spacetime(object.value.start_date).format(
-      "{hour-24-pad}:{minute-pad}"
+      "{hour-24-pad}:{minute-pad}",
     );
   },
   set: function (value) {
@@ -219,7 +247,7 @@ const date_time = computed({
 const enddate_date = computed({
   get: function () {
     return spacetime(object.value.end_date).format(
-      "{year}-{iso-month}-{date-pad}"
+      "{year}-{iso-month}-{date-pad}",
     );
   },
   set: function (value) {
@@ -231,7 +259,7 @@ const enddate_date = computed({
 const enddate_time = computed({
   get: function () {
     return spacetime(object.value.end_date).format(
-      "{hour-24-pad}:{minute-pad}"
+      "{hour-24-pad}:{minute-pad}",
     );
   },
   set: function (value) {
@@ -245,21 +273,23 @@ const risodate = /\d{4}-[01]\d-[0-3]\d/;
 const wrongBulk = computed(() => {
   let lines = bulkTxt.value.split("\n");
   let ok = true;
-  for(var i = 0;i < lines.length;i++){
-    ok = ok && risodate.test(lines[i])
+  for (var i = 0; i < lines.length; i++) {
+    ok = ok && risodate.test(lines[i]);
   }
-  return !ok
+  return !ok;
 });
 
 const willBulk = computed(() => {
-  return  !object.value.id && !wrongBulk.value && bulkTxt.value.split("\n").length > 1;
+  return (
+    !object.value.id && !wrongBulk.value && bulkTxt.value.split("\n").length > 1
+  );
 });
 
 function newEvent(startDate, endDate) {
   object.value = {};
   object.value.start_date = startDate;
   object.value.end_date = endDate;
-  bulkTxt.value=spacetime(startDate).format("iso-short")
+  bulkTxt.value = spacetime(startDate).format("iso-short");
   initEvent();
 }
 
@@ -281,9 +311,7 @@ async function deleteEvent() {
   errors.value = [];
   waiting.value = true;
   try {
-    await store.destroy(
-      object.value.id,
-    );
+    await store.destroy(object.value.id);
     emit("deleted", object.value.id);
     show.value = false;
   } catch (e) {
@@ -294,42 +322,31 @@ async function deleteEvent() {
 async function handleSubmit() {
   errors.value = [];
   waiting.value = true;
-  if(willBulk.value)
-  {
+  if (willBulk.value) {
     let lines = bulkTxt.value.split("\n");
-    var listevent = []
-    for(var i = 0;i < lines.length;i++){
-    var value = lines[i]
-    object.value.start_date = spacetime(value)
-      .time(spacetime(object.value.start_date).time())
-      .format("iso");
-    object.value.end_date = spacetime(value)
-      .time(spacetime(object.value.end_date).time())
-      .format("iso");
-      try{
-        listevent.push(await store.create(object.value))
+    var listevent = [];
+    for (var i = 0; i < lines.length; i++) {
+      var value = lines[i];
+      object.value.start_date = spacetime(value)
+        .time(spacetime(object.value.start_date).time())
+        .format("iso");
+      object.value.end_date = spacetime(value)
+        .time(spacetime(object.value.end_date).time())
+        .format("iso");
+      try {
+        listevent.push(await store.create(object.value));
       } catch (e) {
-        console.log(e)
+        console.log(e);
       }
     }
     emit("created", listevent);
     show.value = false;
-    
   } else {
     try {
       if (object.value.id) {
-        emit(
-          "updated",
-          await store.update(
-            object.value.id,
-            object.value,
-          )
-        );
+        emit("updated", await store.update(object.value.id, object.value));
       } else {
-        emit(
-          "created",
-          await store.create(object.value)
-        );
+        emit("created", await store.create(object.value));
       }
       show.value = false;
     } catch (e) {

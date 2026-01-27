@@ -16,12 +16,18 @@ You should have received a copy of the GNU General Public License along with Fac
 <template>
   <div class="row">
     <div class="col-12">
-      <div v-if="object" class="card">
+      <div
+        v-if="object"
+        class="card"
+      >
         <div class="card-header row justify-content-between">
           <h3 class="col-auto">
             Machines: <strong>{{ cardName }}</strong>
           </h3>
-          <div class="col-auto btn-group float-end" role="group">
+          <div
+            class="col-auto btn-group float-end"
+            role="group"
+          >
             <button
               v-if="!isNew"
               class="btn btn-danger"
@@ -35,23 +41,29 @@ You should have received a copy of the GNU General Public License along with Fac
         <div class="card-body">
           <div class="row">
             <div class="col-12 col-md-6">
-              <form ref="editorForm" class="row g-3">
+              <form
+                ref="editorForm"
+                class="row g-3"
+              >
                 <fieldset>
                   <legend>Informations</legend>
                   <div class="mb-3">
-                    <label class="form-label" for="name">Name</label
-                    ><input
+                    <label
+                      class="form-label"
+                      for="name"
+                    >Name</label><input
                       id="name"
                       v-model="object.name"
                       class="form-control"
                       type="text"
                       required
-                    />
+                    >
                   </div>
                   <div class="mb-3">
-                    <label class="form-label" for="description"
-                      >Description</label
-                    ><textarea
+                    <label
+                      class="form-label"
+                      for="description"
+                    >Description</label><textarea
                       id="description"
                       v-model="object.description"
                       rows="5"
@@ -59,21 +71,26 @@ You should have received a copy of the GNU General Public License along with Fac
                     />
                   </div>
                   <div class="mb-3">
-                    <label class="form-label" for="diplay">Display order</label
-                    ><input
+                    <label
+                      class="form-label"
+                      for="diplay"
+                    >Display order</label><input
                       id="display"
                       v-model="object.display_order"
                       class="form-control"
                       type="number"
                       min="0"
                       required
-                    />
+                    >
                   </div>
                 </fieldset>
               </form>
             </div>
             <div class="col-12 col-md-6">
-              <div v-if="!isNew" class="mb-3">
+              <div
+                v-if="!isNew"
+                class="mb-3"
+              >
                 <form
                   ref="addForm"
                   class="needs-validation"
@@ -87,8 +104,11 @@ You should have received a copy of the GNU General Public License along with Fac
                       :class="{ 'is-invalid': newInstanceError }"
                       required
                       @input="newInstanceError = false"
-                    />
-                    <button class="btn btn-primary" type="submit">
+                    >
+                    <button
+                      class="btn btn-primary"
+                      type="submit"
+                    >
                       Validate
                     </button>
                     <div class="invalid-feedback">
@@ -131,20 +151,31 @@ You should have received a copy of the GNU General Public License along with Fac
                 title="Instance"
                 hide-footer
               >
-                <form class="row g-3" @submit.prevent="updateInstance">
+                <form
+                  class="row g-3"
+                  @submit.prevent="updateInstance"
+                >
                   <div class="mb-3">
-                    <label class="form-label" for="nameI">Name</label
-                    ><input
+                    <label
+                      class="form-label"
+                      for="nameI"
+                    >Name</label><input
                       id="nameI"
                       v-model="selectedInstance.name"
                       class="form-control"
                       type="text"
                       required
-                    />
+                    >
                   </div>
                   <div class="col-12">
-                    <div class="btn-group float-end" role="group">
-                      <button class="btn btn-primary" type="submit">
+                    <div
+                      class="btn-group float-end"
+                      role="group"
+                    >
+                      <button
+                        class="btn btn-primary"
+                        type="submit"
+                      >
                         Update
                       </button>
                       <button
@@ -160,7 +191,10 @@ You should have received a copy of the GNU General Public License along with Fac
               </modal>
             </div>
             <div class="col-12">
-              <div class="btn-group" role="group">
+              <div
+                class="btn-group"
+                role="group"
+              >
                 <button
                   v-if="isNew"
                   class="btn btn-primary"
@@ -210,15 +244,19 @@ const {
   update,
   destroy,
   cancel,
-} = useEditor(store, {
-      name: "",
-      description: "",
-      instances: [],
-      display_order: 0,
-    }, { name: "machines" });
+} = useEditor(
+  store,
+  {
+    name: "",
+    description: "",
+    instances: [],
+    display_order: 0,
+  },
+  { name: "machines" },
+);
 
 const cardName = computed(() =>
-  isNew.value ? "New machine models" : object.value.name
+  isNew.value ? "New machine models" : object.value.name,
 );
 const route = useRoute();
 
@@ -237,12 +275,10 @@ function selectInstance(instance) {
 async function addInstance() {
   if (addForm.value.checkValidity()) {
     try {
-      await store.createInstance(
-        {
-          name: newInstanceName.value,
-          model: object.value.id,
-        }
-      );
+      await store.createInstance({
+        name: newInstanceName.value,
+        model: object.value.id,
+      });
       newInstanceName.value = "";
     } catch (error) {
       if (error.response && error.response.status == 400) {
@@ -254,14 +290,10 @@ async function addInstance() {
   }
 }
 async function updateInstance() {
-  await store.updateInstance(
-    selectedInstance.value.id,
-    selectedInstance.value
-  );
+  await store.updateInstance(selectedInstance.value.id, selectedInstance.value);
   selectedInstance.value = null;
 }
 async function removeInstance(instance) {
   await store.destroyInstance(instance.id, object.value.id);
 }
-
 </script>

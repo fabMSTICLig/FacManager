@@ -18,18 +18,18 @@ You should have received a copy of the GNU General Public License along with Fac
     <div class="container-fluid mt-3 mb-3 border-top border-dark">
       <div class="row mt-3">
         <div class="col">
-          <a class="logo-font" href="/"> FacManager </a>
+          <a
+            class="logo-font"
+            href="/"
+          > FacManager </a>
           |
-            <router-link
-              :to="{ name: 'legalnotice' }"
-            >
-              Legal notice
-            </router-link>
+          <router-link :to="{ name: 'legalnotice' }">
+            Legal notice
+          </router-link>
         </div>
       </div>
     </div>
   </footer>
 </template>
 
-<script setup>
-</script>
+<script setup></script>

@@ -16,21 +16,27 @@ You should have received a copy of the GNU General Public License along with Fac
 <template>
   <nav class="navbar navbar-light navbar-expand-md">
     <div class="container-fluid">
-      <a class="navbar-brand" href="/"
-        ><strong>{{ title }}</strong></a
-      >
+      <a
+        class="navbar-brand"
+        href="/"
+      ><strong>{{ title }}</strong></a>
       <button
         data-toggle="collapse"
         class="navbar-toggler"
         data-target="#navcol-1"
         @click="collapse"
       >
-        <span class="sr-only">Toggle navigation</span
-        ><span class="navbar-toggler-icon" />
+        <span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon" />
       </button>
-      <div id="navcol-1" :class="collapsed">
+      <div
+        id="navcol-1"
+        :class="collapsed"
+      >
         <ul class="nav navbar-nav me-auto">
-          <li class="nav-item" role="presentation">
+          <li
+            class="nav-item"
+            role="presentation"
+          >
             <router-link
               active-class="active"
               class="nav-link"
@@ -40,7 +46,11 @@ You should have received a copy of the GNU General Public License along with Fac
               Home
             </router-link>
           </li>
-          <li v-if="isAuthenticated" class="nav-item" role="presentation">
+          <li
+            v-if="isAuthenticated"
+            class="nav-item"
+            role="presentation"
+          >
             <router-link
               active-class="active"
               class="nav-link"
@@ -50,24 +60,63 @@ You should have received a copy of the GNU General Public License along with Fac
               Reservations
             </router-link>
           </li>
-          <Dropdown v-if="isAdmin" :items="usersroutes" label="Users" is-nav />
-          <Dropdown v-if="isAdmin" :items="fabroutes" label="Fab" is-nav />
+          <Dropdown
+            v-if="isAdmin"
+            :items="usersroutes"
+            label="Users"
+            is-nav
+          />
+          <Dropdown
+            v-if="isAdmin"
+            :items="fabroutes"
+            label="Fab"
+            is-nav
+          />
         </ul>
-        <ul v-if="isAuthenticated" class="nav navbar-nav d-flex">
-          <Dropdown :items="authroutes" :label="authUser.username" is-nav />
+        <ul
+          v-if="isAuthenticated"
+          class="nav navbar-nav d-flex"
+        >
+          <Dropdown
+            :items="authroutes"
+            :label="authUser.username"
+            is-nav
+          />
 
-          <li class="nav-item" role="presentation">
-            <a class="nav-link" href="#" @click.prevent="logout">Logout </a>
+          <li
+            class="nav-item"
+            role="presentation"
+          >
+            <a
+              class="nav-link"
+              href="#"
+              @click.prevent="logout"
+            >Logout </a>
           </li>
         </ul>
-        <ul v-else class="nav navbar-nav">
-          <li class="nav-item" role="presentation">
-            <a v-if="cas" class="nav-link" href="/cas/login">CAS</a>
+        <ul
+          v-else
+          class="nav navbar-nav"
+        >
+          <li
+            class="nav-item"
+            role="presentation"
+          >
+            <a
+              v-if="cas"
+              class="nav-link"
+              href="/cas/login"
+            >CAS</a>
           </li>
-          <li class="nav-item" role="presentation">
-            <a class="nav-link" href="#" @click.prevent="showLogin = true"
-              >Login</a
-            >
+          <li
+            class="nav-item"
+            role="presentation"
+          >
+            <a
+              class="nav-link"
+              href="#"
+              @click.prevent="showLogin = true"
+            >Login</a>
           </li>
         </ul>
       </div>
@@ -80,28 +129,41 @@ You should have received a copy of the GNU General Public License along with Fac
       hide-footer
     >
       <form class="form">
-        <div v-if="wrongCredentials" class="invalid-feedback d-block">
+        <div
+          v-if="wrongCredentials"
+          class="invalid-feedback d-block"
+        >
           Wrong Credentials
         </div>
         <div class="mb-3">
-          <label for="username" class="form-label">Username</label>
+          <label
+            for="username"
+            class="form-label"
+          >Username</label>
           <input
             id="username"
             v-model="username"
             type="text"
             class="form-control"
-          />
+          >
         </div>
         <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
+          <label
+            for="password"
+            class="form-label"
+          >Password</label>
           <input
             id="password"
             v-model="password"
             type="password"
             class="form-control"
-          />
+          >
         </div>
-        <button type="button" class="btn btn-primary" @click="login">
+        <button
+          type="button"
+          class="btn btn-primary"
+          @click="login"
+        >
           Submit
         </button>
       </form>
@@ -185,10 +247,7 @@ const password = ref();
 
 async function login() {
   try {
-    const response = await store.login(
-      username.value,
-      password.value
-    );
+    const response = await store.login(username.value, password.value);
     if (response.status == 202) {
       window.location = "/";
     }

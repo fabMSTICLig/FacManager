@@ -19,7 +19,9 @@ You should have received a copy of the GNU General Public License along with Fac
       <div class="card">
         <div class="card-header">
           <div class="row justify-content-between">
-            <h3 class="col-auto">Projects</h3>
+            <h3 class="col-auto">
+              Projects
+            </h3>
             <div class="col-auto">
               <router-link
                 class="btn btn-primary float-end"
@@ -34,16 +36,17 @@ You should have received a copy of the GNU General Public License along with Fac
         <div class="card-body">
           <form class="row row-cols-lg-auto g-3 align-items-center">
             <div class="col-12">
-              <label class="form-label visually-hidden" for="searchInput"
-                >Search</label
-              >
+              <label
+                class="form-label visually-hidden"
+                for="searchInput"
+              >Search</label>
               <input
                 id="searchInput"
                 v-model="searchInput"
                 class="form-control"
                 type="search"
                 placeholder="Search"
-              />
+              >
             </div>
           </form>
           <div class="table-responsive">
@@ -53,11 +56,14 @@ You should have received a copy of the GNU General Public License along with Fac
                   <th>Name</th>
                   <th>Start</th>
                   <th>End</th>
-                  <th></th>
+                  <th />
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="item in objects" :key="item.id">
+                <tr
+                  v-for="item in objects"
+                  :key="item.id"
+                >
                   <td v-text="item.name" />
                   <td v-text="item.start_date" />
                   <td v-text="item.end_date" />
@@ -91,7 +97,7 @@ You should have received a copy of the GNU General Public License along with Fac
 
 <script setup>
 import { ref, onBeforeMount } from "vue";
-import useDebouncedRef from "@/composables/useDebouncedRef"
+import useDebouncedRef from "@/composables/useDebouncedRef";
 import { storeToRefs } from "pinia";
 import { useProjectsStore } from "@/stores/projects";
 
@@ -119,7 +125,7 @@ const { refresh } = useSearchStorage(
   fetch,
   { search: searchInput },
   currentPage,
-  perPage.value
+  perPage.value,
 );
 
 onBeforeMount(async () => {

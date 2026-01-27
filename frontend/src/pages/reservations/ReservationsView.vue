@@ -14,18 +14,21 @@ You should have received a copy of the GNU General Public License along with Fac
 -->
 
 <template>
-  <div v-if="loaded" class="row">
+  <div
+    v-if="loaded"
+    class="row"
+  >
     <div class="col-12">
-      <FullCalendar ref="calendar" :options="calendarOptions" />
+      <FullCalendar
+        ref="calendar"
+        :options="calendarOptions"
+      />
     </div>
     <div class="col col-12">
       <div class="fm-event-legend">
         <div>
-          <strong>Opening Hours : </strong
-          ><span
-            >Monday 13:30 to 17:00, Tuesday-Friday 9:00 to 11:00 and 13:30 to
-            17:00</span
-          >
+          <strong>Opening Hours : </strong><span>Monday 13:30 to 17:00, Tuesday-Friday 9:00 to 11:00 and 13:30 to
+            17:00</span>
         </div>
         <div class="d-flex text-light">
           <span class="event-background p-2">Event</span>
@@ -35,10 +38,11 @@ You should have received a copy of the GNU General Public License along with Fac
             class="fc-event p-2"
             :style="'background-color:' + v"
             v-text="'Reservation ' + k"
-          ></span>
-          <span class="p-2 text-dark" style="border: 1px solid red"
-            >My reservations</span
-          >
+          />
+          <span
+            class="p-2 text-dark"
+            style="border: 1px solid red"
+          >My reservations</span>
         </div>
       </div>
     </div>
@@ -75,7 +79,7 @@ import FullCalendar from "@fullcalendar/vue3";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import frLocale from "@fullcalendar/core/locales/fr";
 import interactionPlugin from "@fullcalendar/interaction";
-import bootstrap5Plugin from '@fullcalendar/bootstrap5';
+import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 
 import { ref, nextTick, onBeforeMount } from "vue";
 import { storeToRefs } from "pinia";
@@ -112,7 +116,6 @@ const props = defineProps({
   },
 });
 
-
 const showCharter = ref(false);
 const charterUrl = import.meta.env.VITE_APP_CHARTER_URL;
 
@@ -128,26 +131,34 @@ const { list: machine_models } = storeToRefs(machineModelsStore);
 const eventsStore = useEventsStore();
 const { list: events } = storeToRefs(eventsStore);
 const managersStore = useManagersStore();
-const { list: managers, events:managersEvents } = storeToRefs(managersStore);
-
+const { list: managers } = storeToRefs(managersStore);
 
 onBeforeMount(async () => {
   const resStore = useResourcesStore();
-  const {businessHours, minHour, maxHour} = storeToRefs(resStore)
+  const { businessHours, minHour, maxHour } = storeToRefs(resStore);
   await resStore.fetchResources();
-  calendarOptions.views.resourceTimeline.slotMinTime=minHour.value;
-  calendarOptions.views.resourceTimeline.slotMaxTime=maxHour.value;
-  calendarOptions.businessHours=businessHours.value;
-  resources.value.push({ id: "event", title: "Events", group: "01 Events" });
+  calendarOptions.views.resourceTimeline.slotMinTime = minHour.value;
+  calendarOptions.views.resourceTimeline.slotMaxTime = maxHour.value;
+  calendarOptions.businessHours = businessHours.value;
+  resources.value.push({
+    id: "event",
+    title: "Events",
+    group: "01 Events",
+    businessHours: {
+      startTime: minHour.value,
+      endTime: maxHour.value,
+    },
+  });
   resources.value = resources.value.concat(
     managers.value.map((manager) => {
       return {
-        id: "m"+manager.id,
+        id: "m" + manager.id,
         title: manager.name,
         group: "02 Managers",
         manager: manager,
+        businessHours: manager.businessHours,
       };
-    })
+    }),
   );
   machine_models.value.forEach((mm) => {
     mm.instances.forEach((i) => {
@@ -162,21 +173,18 @@ onBeforeMount(async () => {
   });
   calendarOptions.resources = resources.value;
   let resa = null;
-  if(props.resaid)
-  {
-    resa = await reservationsStore.fetchSingle(props.resaid)
+  if (props.resaid) {
+    resa = await reservationsStore.fetchSingle(props.resaid);
   }
   await trainingLevelsStore.fetchList({}, "/users/" + authUser.value.id + "/");
   loaded.value = true;
   await nextTick();
   calAPI = calendar.value.getApi();
-  if(resa)
-  {
-    calAPI.gotoDate(resa.start_date)
+  if (resa) {
+    calAPI.gotoDate(resa.start_date);
     if (isAdmin.value || resa.own) resaUpdate(resa);
   }
   if (!authUser.value.charter) showCharter.value = true;
-
 });
 
 function eventToCalEvent(event) {
@@ -202,22 +210,11 @@ function resaToCalEvent(resa) {
     resa: resa,
   };
   if (resa.machine) calEvent.resourceIds.push(resa.machine);
-  if (resa.manager) calEvent.resourceIds.push("m"+resa.manager);
+  if (resa.manager) calEvent.resourceIds.push("m" + resa.manager);
   if (resa.own) calEvent.borderColor = "red";
   return calEvent;
 }
 
-function managerEventToCalEvent(event) {
-  return {
-    title: "",
-    start: event.dtstart,
-    end: event.dtend,
-    id: "me" + event.id,
-    display: 'background',
-    color: "red",
-    resourceId: "m"+event.manager,
-  };
-}
 function fetchCalEvents(dateInfo, success) {
   datesQuery.value = {
     mindate: dateInfo.startStr,
@@ -227,12 +224,10 @@ function fetchCalEvents(dateInfo, success) {
   Promise.all([
     reservationsStore.fetchList(datesQuery.value),
     eventsStore.fetchList(datesQuery.value),
-    managersStore.fetchEvents(datesQuery.value),
   ]).then(() => {
     let ev = [];
     ev = reservations.value.map(resaToCalEvent);
     ev = ev.concat(events.value.map(eventToCalEvent));
-    ev = ev.concat(managersEvents.value.map(managerEventToCalEvent));
     success(ev);
   });
 }
@@ -246,14 +241,11 @@ function resaInterfaces(interfaces) {
 }
 
 function resaCreated(resa) {
-  if (Array.isArray(resa))
-  {
-    for(var i = 0;i <resa.length;i++){
+  if (Array.isArray(resa)) {
+    for (var i = 0; i < resa.length; i++) {
       calAPI.addEvent(resaToCalEvent(resa[i]), true);
     }
-  }
-  else
-  {
+  } else {
     calAPI.addEvent(resaToCalEvent(resa), true);
   }
 }
@@ -263,7 +255,7 @@ function resaUpdated(resa) {
   if (calEvent) {
     calEvent.setProp(
       "title",
-      reservationTypes.value[resa.reservation_type].name + "\n" + resa.status
+      reservationTypes.value[resa.reservation_type].name + "\n" + resa.status,
     );
     calEvent.setStart(resa.start_date);
     calEvent.setEnd(resa.end_date);
@@ -273,7 +265,7 @@ function resaUpdated(resa) {
     if (resa.own) calEvent.setProp("borderColor", "red");
     let resids = [];
     if (resa.machine) resids.push(resa.machine);
-    if (resa.manager) resids.push("m"+resa.manager);
+    if (resa.manager) resids.push("m" + resa.manager);
     calEvent.setResources(resids);
   }
 }
@@ -291,15 +283,12 @@ function eventInterfaces(interfaces) {
 }
 
 function eventCreated(event) {
-  if (Array.isArray(event))
-  {
-    for(var i = 0;i <event.length;i++){
+  if (Array.isArray(event)) {
+    for (var i = 0; i < event.length; i++) {
       calAPI.addEvent(eventToCalEvent(event[i]), true);
     }
-  }
-  else
-  {
-  calAPI.addEvent(eventToCalEvent(event), true);
+  } else {
+    calAPI.addEvent(eventToCalEvent(event), true);
   }
 }
 
@@ -338,13 +327,11 @@ const headerToolbar = {
   right: "refresh today prevWeek,nextWeek",
 };
 
-
-
 const calendarOptions = {
   plugins: [bootstrap5Plugin, resourceTimelinePlugin, interactionPlugin],
   schedulerLicenseKey: "GPL-My-Project-Is-Open-Source",
   initialView: "resourceTimelineWeek",
-  themeSystem: 'bootstrap5',
+  themeSystem: "bootstrap5",
   locale: frLocale,
   height: "auto",
   contentHeight: "auto",
@@ -355,8 +342,8 @@ const calendarOptions = {
   initialDate: sessionStorage.getItem("start_date"),
   views: {
     resourceTimeline: {
-      slotMinTime: '00:00',
-      slotMaxTime: '23:59',
+      slotMinTime: "00:00",
+      slotMaxTime: "23:59",
       slotDuration: "00:30:00",
       titleFormat: { year: "numeric", month: "2-digit", day: "2-digit" },
     },
@@ -370,17 +357,17 @@ const calendarOptions = {
       },
     },
     prevWeek: {
-      text : "<",
-      click: function() {
-            calAPI.incrementDate( { days: -7 } );
-          }
+      text: "<",
+      click: function () {
+        calAPI.incrementDate({ days: -7 });
+      },
     },
     nextWeek: {
-      text : ">",
-      click: function() {
-            calAPI.incrementDate( { days: 7 } );
-          }
-    }
+      text: ">",
+      click: function () {
+        calAPI.incrementDate({ days: 7 });
+      },
+    },
   },
   headerToolbar: headerToolbar,
   resourceGroupField: "group",

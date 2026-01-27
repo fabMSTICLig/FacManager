@@ -19,67 +19,93 @@ You should have received a copy of the GNU General Public License along with Fac
       <h3>Votre profile</h3>
     </div>
     <div class="card-body">
-      <form id="editor-form" class="form">
+      <form
+        id="editor-form"
+        class="form"
+      >
         <div class="mb-3">
-          <label class="form-label" for="username">Username</label
-          ><input
+          <label
+            class="form-label"
+            for="username"
+          >Username</label><input
             id="username"
             v-model="authUser.username"
             class="form-control"
             type="text"
             readonly
-          />
+          >
         </div>
         <div class="mb-3">
-          <label class="form-label" for="firstname">First name</label
-          ><input
+          <label
+            class="form-label"
+            for="firstname"
+          >First name</label><input
             id="firstname"
             v-model="authUser.first_name"
             class="form-control"
             type="text"
             required
             :readonly="extern"
-          />
+          >
         </div>
         <div class="mb-3">
-          <label class="form-label" for="lastname">Last name</label
-          ><input
+          <label
+            class="form-label"
+            for="lastname"
+          >Last name</label><input
             id="lastname"
             v-model="authUser.last_name"
             class="form-control"
             type="text"
             required
             :readonly="extern"
-          />
+          >
         </div>
         <div class="mb-3">
-          <label class="form-label" for="email">Email</label
-          ><input
+          <label
+            class="form-label"
+            for="email"
+          >Email</label><input
             id="email"
             v-model="authUser.email"
             class="form-control"
             type="email"
             required
             :readonly="extern"
-          />
+          >
         </div>
         <template v-if="!authUser.externe">
           <div class="mb-3">
             <label for="oldPassword">Old password:</label>
-            <div v-if="goodpassword" class="valid-feedback d-block">
+            <div
+              v-if="goodpassword"
+              class="valid-feedback d-block"
+            >
               Password changed
             </div>
-            <div v-if="goodpassword == false" class="invalid-feedback d-block">
+            <div
+              v-if="goodpassword == false"
+              class="invalid-feedback d-block"
+            >
               Wrong Password
             </div>
 
-            <div v-if="passvalid == false" class="invalid-feedback d-block">
+            <div
+              v-if="passvalid == false"
+              class="invalid-feedback d-block"
+            >
               The old password is required for changing it
             </div>
-            <div v-if="passvalid == false" class="invalid-feedback d-block">
+            <div
+              v-if="passvalid == false"
+              class="invalid-feedback d-block"
+            >
               The new password is required
             </div>
-            <div v-if="passvalid == false" class="invalid-feedback d-block">
+            <div
+              v-if="passvalid == false"
+              class="invalid-feedback d-block"
+            >
               The Confirm Password is required and must be the same as New
               Password
             </div>
@@ -93,7 +119,7 @@ You should have received a copy of the GNU General Public License along with Fac
                 passvalid == null ? '' : passvalid ? 'is-valid' : 'is-invalid'
               "
               placeholder="Enter current password"
-            />
+            >
           </div>
           <div class="mb-3">
             <label for="newpass">New password:</label>
@@ -106,7 +132,7 @@ You should have received a copy of the GNU General Public License along with Fac
                 passvalid == null ? '' : passvalid ? 'is-valid' : 'is-invalid'
               "
               placeholder="Enter new password"
-            />
+            >
           </div>
           <div class="mb-3">
             <label for="newpassconf">Confirm new password:</label>
@@ -119,22 +145,40 @@ You should have received a copy of the GNU General Public License along with Fac
                 passvalid == null ? '' : passvalid ? 'is-valid' : 'is-invalid'
               "
               placeholder="Confirm password"
-            />
+            >
           </div>
         </template>
 
-        <div v-if="authUser.rgpd_accept" class="mb-3">
+        <div
+          v-if="authUser.rgpd_accept"
+          class="mb-3"
+        >
           <label class="form-label">Organizations</label>
-          <DynList v-model="authUser.organizations" :resource="fetchOrgas" />
+          <DynList
+            v-model="authUser.organizations"
+            :resource="fetchOrgas"
+          />
         </div>
-        <div class="mt-2" role="group">
-          <button class="btn btn-primary" type="button" @click="updateUser">
+        <div
+          class="mt-2"
+          role="group"
+        >
+          <button
+            class="btn btn-primary"
+            type="button"
+            @click="updateUser"
+          >
             Update
           </button>
         </div>
       </form>
     </div>
-    <modal id="modal-rgpd" v-model:show="showRGPD" title="RGPD" hide-footer>
+    <modal
+      id="modal-rgpd"
+      v-model:show="showRGPD"
+      title="RGPD"
+      hide-footer
+    >
       <h6>Conditions d'utilisation</h6>
       <p>
         Pour permettre le bon fonctionnment du site certaines de vos
@@ -152,8 +196,16 @@ You should have received a copy of the GNU General Public License along with Fac
 
       <h6>Accepter vous ces termes ?</h6>
       <div>
-        <div class="btn-group" role="group" aria-label="RGPD Accept">
-          <button type="button" class="btn btn-primary" @click="acceptRGPD">
+        <div
+          class="btn-group"
+          role="group"
+          aria-label="RGPD Accept"
+        >
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="acceptRGPD"
+          >
             Oui
           </button>
           <button
@@ -182,14 +234,14 @@ const { authUser } = storeToRefs(store);
 const showModal = inject("show");
 
 const storeOrganizations = useOrganizationsStore();
-const {fetchList: fetchOrgas} = storeOrganizations;
+const { fetchList: fetchOrgas } = storeOrganizations;
 
 const extern = computed(() => authUser.extern);
 const showRGPD = ref(false);
 async function acceptRGPD() {
-  await store.updateRGPD()
+  await store.updateRGPD();
   showRGPD.value = false;
-  fetchOrgas()
+  fetchOrgas();
 }
 
 onBeforeMount(() => {

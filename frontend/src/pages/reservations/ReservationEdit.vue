@@ -22,17 +22,35 @@ You should have received a copy of the GNU General Public License along with Fac
     :resolve="resolveModal"
     hide-footer
   >
-    <form ref="form" @submit.prevent="handleSubmit">
-      <div v-if="errors" ref="resa_errors" class="invalid-feedback d-block">
+    <form
+      ref="form"
+      @submit.prevent="handleSubmit"
+    >
+      <div
+        v-if="errors"
+        ref="resa_errors"
+        class="invalid-feedback d-block"
+      >
         <ul class="error-messages">
-          <li v-for="e in errors" :key="e">{{ e }}</li>
+          <li
+            v-for="e in errors"
+            :key="e"
+          >
+            {{ e }}
+          </li>
         </ul>
       </div>
       <div class="row">
-        <fieldset class="col-12 col-md-6" :disabled="reservationReadOnly">
+        <fieldset
+          class="col-12 col-md-6"
+          :disabled="reservationReadOnly"
+        >
           <template v-if="isAdmin">
             <div class="mb-3">
-              <label class="form-label" for="resa-user">User :</label>
+              <label
+                class="form-label"
+                for="resa-user"
+              >User :</label>
               <Multiselect
                 id="resa-user"
                 ref="msuser"
@@ -63,7 +81,10 @@ You should have received a copy of the GNU General Public License along with Fac
               </div>
             </div>
           </template>
-          <div v-show="pasteDate" class="alert alert-warning">
+          <div
+            v-show="pasteDate"
+            class="alert alert-warning"
+          >
             <strong>Warning!</strong> The date is in the past.
           </div>
           <div class="mb-3">
@@ -76,14 +97,16 @@ You should have received a copy of the GNU General Public License along with Fac
                   class="form-control"
                   type="date"
                   required
-                />
+                >
                 <button
-                    v-if="isAdmin && !object.id"
-                    class="btn btn-sm input-group-append"
-                    :class="[willBulk ? 'btn-success' : 'btn-danger']"
-                    type="button"
-                    @click="showBulk=true"
-                    >Bulk</button>
+                  v-if="isAdmin && !object.id"
+                  class="btn btn-sm input-group-append"
+                  :class="[willBulk ? 'btn-success' : 'btn-danger']"
+                  type="button"
+                  @click="showBulk = true"
+                >
+                  Bulk
+                </button>
               </div>
               <div class="col">
                 <input
@@ -95,7 +118,7 @@ You should have received a copy of the GNU General Public License along with Fac
                   :max="isAdmin ? '' : END_HOUR"
                   :step="MIN_START_MINUTE"
                   required
-                />
+                >
               </div>
             </div>
           </div>
@@ -109,20 +132,23 @@ You should have received a copy of the GNU General Public License along with Fac
                 type="number"
                 step="0.5"
                 required
-              />
+              >
               <div class="input-group-append">
-                <div class="input-group-text">h</div>
+                <div class="input-group-text">
+                  h
+                </div>
               </div>
             </div>
           </div>
           <div class="mb-3">
-            <label for="resa-comm">Commentary (Optional):</label>
+            <label for="resa-comm">Commentary:</label>
             <textarea
               id="resa-comm"
               v-model="object.commentary"
               class="form-control"
               placeholder="Commentary"
-            ></textarea>
+              required
+            />
           </div>
           <div class="mb-3">
             <label for="resa-project">Project (Optional):</label>
@@ -131,19 +157,22 @@ You should have received a copy of the GNU General Public License along with Fac
               v-model="object.project"
               class="form-control"
             >
-              <option></option>
+              <option />
               <option
                 v-for="project in projects"
                 :key="project.id"
                 :value="project.id"
                 v-text="project.name"
-              ></option>
+              />
             </select>
           </div>
         </fieldset>
         <div class="col-12 col-md-6">
           <div class="row">
-            <fieldset class="col-12" :disabled="reservationReadOnly">
+            <fieldset
+              class="col-12"
+              :disabled="reservationReadOnly"
+            >
               <div class="mb-3">
                 <label for="resa-type">Type:</label>
                 <div class="input-group">
@@ -164,9 +193,16 @@ You should have received a copy of the GNU General Public License along with Fac
                   </select>
                 </div>
               </div>
-              <div v-if="machineModel" class="mb-3">
-                <label v-text="machineModel.name"></label>
-                <select v-model="object.machine" class="form-control" required>
+              <div
+                v-if="machineModel"
+                class="mb-3"
+              >
+                <label v-text="machineModel.name" />
+                <select
+                  v-model="object.machine"
+                  class="form-control"
+                  required
+                >
                   <option
                     v-for="m in machineModel.instances"
                     :key="m.id"
@@ -175,7 +211,10 @@ You should have received a copy of the GNU General Public License along with Fac
                   />
                 </select>
               </div>
-              <div v-if="reservationType.need_manager" class="mb-3">
+              <div
+                v-if="reservationType.need_manager"
+                class="mb-3"
+              >
                 <label for="resa-manager">Manager:</label>
                 <div class="input-group">
                   <select
@@ -196,14 +235,17 @@ You should have received a copy of the GNU General Public License along with Fac
                 </div>
               </div>
             </fieldset>
-            <div v-if="object.id && addSU != null" class="col-12">
+            <div
+              v-if="object.id && addSU != null"
+              class="col-12"
+            >
               <table class="table">
                 <thead>
                   <tr>
                     <th>Supply</th>
                     <th>Quantity</th>
-                    <th v-if="isAdmin"></th>
-                    <th></th>
+                    <th v-if="isAdmin" />
+                    <th />
                   </tr>
                 </thead>
                 <tbody>
@@ -230,15 +272,18 @@ You should have received a copy of the GNU General Public License along with Fac
                           min="0"
                           step="0.01"
                           class="form-control"
-                        /><span class="input-group-text">{{
+                        ><span class="input-group-text">{{
                           getSupplyUnit(addSU.supply)
                         }}</span>
                       </div>
                     </td>
-                    <td v-if="isAdmin"></td>
+                    <td v-if="isAdmin" />
 
                     <td>
-                      <div class="btn-group col-auto" role="group">
+                      <div
+                        class="btn-group col-auto"
+                        role="group"
+                      >
                         <button
                           class="btn btn-primary btn-sm"
                           type="button"
@@ -250,7 +295,10 @@ You should have received a copy of the GNU General Public License along with Fac
                     </td>
                   </tr>
 
-                  <tr v-for="su in supplyUsages" :key="su.id">
+                  <tr
+                    v-for="su in supplyUsages"
+                    :key="su.id"
+                  >
                     <td>
                       <select
                         v-model="su.supply"
@@ -275,7 +323,7 @@ You should have received a copy of the GNU General Public License along with Fac
                           step="0.01"
                           class="form-control"
                           :readonly="!isAdmin && su.validated"
-                        /><span class="input-group-text">{{
+                        ><span class="input-group-text">{{
                           getSupplyUnit(su.supply)
                         }}</span>
                       </div>
@@ -287,14 +335,20 @@ You should have received a copy of the GNU General Public License along with Fac
                             v-model="su.validated"
                             type="checkbox"
                             class="form-check-input"
-                          />
+                          >
                         </div>
                       </div>
                     </td>
 
                     <td>
-                      <div v-if="!isAdmin && su.validated">Validated</div>
-                      <div v-else class="btn-group col-auto" role="group">
+                      <div v-if="!isAdmin && su.validated">
+                        Validated
+                      </div>
+                      <div
+                        v-else
+                        class="btn-group col-auto"
+                        role="group"
+                      >
                         <button
                           class="btn btn-primary btn-sm"
                           type="button"
@@ -332,7 +386,11 @@ You should have received a copy of the GNU General Public License along with Fac
           Delete
         </button>
 
-        <button class="btn btn-secondary" type="button" @click="show = false">
+        <button
+          class="btn btn-secondary"
+          type="button"
+          @click="show = false"
+        >
           {{ reservationReadOnly ? "Close" : "Cancel" }}
         </button>
         <button
@@ -345,26 +403,28 @@ You should have received a copy of the GNU General Public License along with Fac
         </button>
       </div>
       <modal
-      id="modal-bulk"
-      title="List of date"
-      :show="showBulk"
-      :resolve="() => (showBulk = false)"
-    >
-      <div class="mb-3">
-            <label for="bulktxt">List of date format 2025-05-30, one per line</label>
-            <textarea
-              id="bulktxt"
-              v-model="bulkTxt"
-              class="form-control"
-              placeholder="2025-05-23"
-              rows="10"
-            ></textarea>
-            <div v-show="wrongBulk" class="alert alert-warning">
+        id="modal-bulk"
+        title="List of date"
+        :show="showBulk"
+        :resolve="() => (showBulk = false)"
+      >
+        <div class="mb-3">
+          <label for="bulktxt">List of date format 2025-05-30, one per line</label>
+          <textarea
+            id="bulktxt"
+            v-model="bulkTxt"
+            class="form-control"
+            placeholder="2025-05-23"
+            rows="10"
+          />
+          <div
+            v-show="wrongBulk"
+            class="alert alert-warning"
+          >
             <strong>Warning!</strong> Wrong format for bulk dates.
           </div>
-          </div>
-    </modal>
-
+        </div>
+      </modal>
     </form>
   </modal>
 </template>
@@ -401,7 +461,7 @@ const suppliesStore = useSuppliesStore();
 const supplyUsagesStore = useSupplyUsagesStore();
 const reservationTypesStore = useReservationTypesStore();
 const { objects: resaTypesDict, list: resaTypes } = storeToRefs(
-  reservationTypesStore
+  reservationTypesStore,
 );
 const trainingLevelsStore = useTrainingLevelsStore();
 const { objects: tls } = storeToRefs(trainingLevelsStore);
@@ -470,20 +530,21 @@ const reservationType = computed(() => {
     }
   );
 });
-watch(reservationType, ()=>{
-  if(reservationType.value.spe_manager) object.value.manager = reservationType.value.spe_manager;
+watch(reservationType, () => {
+  if (reservationType.value.spe_manager)
+    object.value.manager = reservationType.value.spe_manager;
 });
 const date_date = computed({
   get: function () {
     return spacetime(object.value.start_date).format(
-      "{year}-{iso-month}-{date-pad}"
+      "{year}-{iso-month}-{date-pad}",
     );
   },
   set: function (value) {
     object.value.start_date = spacetime(value)
       .time(spacetime(object.value.start_date).time())
       .format("iso");
-    bulkTxt.value=spacetime(value).format("iso-short")
+    bulkTxt.value = spacetime(value).format("iso-short");
     object.value.end_date = spacetime(value)
       .time(spacetime(object.value.end_date).time())
       .format("iso");
@@ -492,13 +553,13 @@ const date_date = computed({
 const date_time = computed({
   get: function () {
     return spacetime(object.value.start_date).format(
-      "{hour-24-pad}:{minute-pad}"
+      "{hour-24-pad}:{minute-pad}",
     );
   },
   set: function (value) {
     var diff = spacetime(object.value.start_date).diff(
       spacetime(object.value.end_date),
-      "minutes"
+      "minutes",
     );
     let newvalue = spacetime(object.value.start_date).time(value);
     object.value.start_date = newvalue.format("iso");
@@ -531,14 +592,19 @@ const risodate = /\d{4}-[01]\d-[0-3]\d/;
 const wrongBulk = computed(() => {
   let lines = bulkTxt.value.split("\n");
   let ok = true;
-  for(var i = 0;i < lines.length;i++){
-    ok = ok && risodate.test(lines[i])
+  for (var i = 0; i < lines.length; i++) {
+    ok = ok && risodate.test(lines[i]);
   }
-  return !ok
+  return !ok;
 });
 
 const willBulk = computed(() => {
-  return  !object.value.id && !wrongBulk.value && bulkTxt.value.split("\n").length > 1 && object.value.status == "Accepted";
+  return (
+    !object.value.id &&
+    !wrongBulk.value &&
+    bulkTxt.value.split("\n").length > 1 &&
+    object.value.status == "Accepted"
+  );
 });
 
 const { list: managers } = storeToRefs(managersStore);
@@ -559,7 +625,7 @@ function newResa(startDate, endDate, resource) {
     end_date: endDate,
     manager: null,
   };
-  bulkTxt.value=spacetime(startDate).format("iso-short")
+  bulkTxt.value = spacetime(startDate).format("iso-short");
   if (isAdmin.value) {
     object.value.status = "Accepted";
   }
@@ -567,9 +633,8 @@ function newResa(startDate, endDate, resource) {
   if ("model" in resource.extendedProps)
     object.value.machine = parseInt(resource.id);
   else object.value.machine = null;
-  if(authUser.value.projects.length)
-  {
-    object.value.project = authUser.value.projects[0]
+  if (authUser.value.projects.length) {
+    object.value.project = authUser.value.projects[0];
   }
   initResa();
 }
@@ -613,35 +678,33 @@ async function deleteResa() {
 async function handleSubmit() {
   errors.value = [];
   waiting.value = true;
-  if(!reservationType.value.machine_model) object.value.machine=null;
-  if(!reservationType.value.need_manager) object.value.manager=null;
-  if(willBulk.value)
-  {
+  if (!reservationType.value.machine_model) object.value.machine = null;
+  if (!reservationType.value.need_manager) object.value.manager = null;
+  if (willBulk.value) {
     let lines = bulkTxt.value.split("\n");
-    var listresa = []
-    for(var i = 0;i < lines.length;i++){
-    var value = lines[i]
-    object.value.start_date = spacetime(value)
-      .time(spacetime(object.value.start_date).time())
-      .format("iso");
-    object.value.end_date = spacetime(value)
-      .time(spacetime(object.value.end_date).time())
-      .format("iso");
-      try{
-        listresa.push(await store.create(object.value))
+    var listresa = [];
+    for (var i = 0; i < lines.length; i++) {
+      var value = lines[i];
+      object.value.start_date = spacetime(value)
+        .time(spacetime(object.value.start_date).time())
+        .format("iso");
+      object.value.end_date = spacetime(value)
+        .time(spacetime(object.value.end_date).time())
+        .format("iso");
+      try {
+        listresa.push(await store.create(object.value));
       } catch (e) {
-        console.log(e)
+        console.log(e);
       }
     }
     emit("created", listresa);
     show.value = false;
-    
   } else {
     try {
       if (object.value.id) {
         emit("updated", await store.update(object.value.id, object.value));
       } else {
-          emit("created", await store.create(object.value));
+        emit("created", await store.create(object.value));
       }
       show.value = false;
     } catch (e) {
@@ -679,7 +742,7 @@ if (supplies.value.length) {
 function addSupplyUsage() {
   supplyUsagesStore.create(
     addSU.value,
-    "/reservations/" + object.value.id + "/"
+    "/reservations/" + object.value.id + "/",
   );
 }
 

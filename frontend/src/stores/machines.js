@@ -29,7 +29,7 @@ export const useMachineModelsStore = defineStore("machine_models", () => {
     if (data["id"]) {
       const model = data["model"].toString();
       const listIndex = objects.value[model].instances.findIndex(
-        (e) => e.id == data["id"]
+        (e) => e.id == data["id"],
       );
       if (listIndex >= 0) {
         objects.value[model].instances.splice(listIndex, 1, data);
@@ -40,7 +40,7 @@ export const useMachineModelsStore = defineStore("machine_models", () => {
   async function destroyInstance(id, model) {
     const { data } = await ApiService.delete("machines", id);
     const listIndex = objects.value[model.toString()].instances.findIndex(
-      (e) => e.id == id
+      (e) => e.id == id,
     );
     if (listIndex >= 0) {
       objects.value[model.toString()].instances.splice(listIndex, 1);

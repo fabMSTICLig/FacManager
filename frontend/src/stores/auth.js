@@ -13,27 +13,27 @@ export const useAuthStore = defineStore("auth", () => {
 
   const isAuthenticated = computed(() => authUser.value != null);
   const isAdmin = computed(
-    () => authUser.value && authUser.value.is_staff == true
+    () => authUser.value && authUser.value.is_staff == true,
   );
   const isManager = computed(
-    () => authUser.value && authUser.value.entities.length != 0
+    () => authUser.value && authUser.value.entities.length != 0,
   );
   async function waitFirstCheck() {
     await pfc;
   }
 
   async function login(username, password) {
-      return await axios.post("/login/", {username,password}, {baseURL: ""})
+    return await axios.post("/login/", { username, password }, { baseURL: "" });
   }
   async function logout() {
-      return await axios.get("/logout/", {baseURL: ""})
+    return await axios.get("/logout/", { baseURL: "" });
   }
 
   async function checkAuth() {
-    try{  
+    try {
       const { data: datauser } = await ApiService.get("self");
       authUser.value = datauser.user;
-    } catch(_) {
+    } catch (_) {
       authUser.value = null;
     }
     if (!firstCheck.value) {

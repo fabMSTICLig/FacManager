@@ -9,9 +9,9 @@ export const useTrainingLevelsStore = defineStore("training_levels", () => {
   const list = computed(() => Object.values(objects.value));
 
   async function bulkUpdate(userid, tls) {
-    const {data} = await ApiService.put(
+    const { data } = await ApiService.put(
       "users/" + userid + "/training_levels",
-      tls
+      tls,
     );
     objects.value = {};
     data.forEach((m) => {
@@ -23,7 +23,7 @@ export const useTrainingLevelsStore = defineStore("training_levels", () => {
   }
 
   async function fetchList(params = {}, prefix) {
-    const { data } = await ApiService.query(prefix+"training_levels", params);
+    const { data } = await ApiService.query(prefix + "training_levels", params);
     objects.value = {};
     data.forEach((m) => {
       objects.value[m["machine_model"].toString()] = m;
@@ -36,7 +36,10 @@ export const useTrainingLevelsStore = defineStore("training_levels", () => {
     if (Object.keys(objects.value).indexOf(machine_model) > -1)
       return objects.value[machine_model];
 
-    const { data } = await ApiService.get(prefix + "training_levels", machine_model);
+    const { data } = await ApiService.get(
+      prefix + "training_levels",
+      machine_model,
+    );
     objects.value = { ...objects.value, [machine_model]: data };
     return data;
   }
@@ -50,13 +53,16 @@ export const useTrainingLevelsStore = defineStore("training_levels", () => {
       prefix + "training_levels",
       machine_model,
       dataIn,
-      params
+      params,
     );
     objects.value = { ...objects.value, [machine_model]: data };
     return data;
   }
   async function destroy(machine_model, prefix = "") {
-    const { data } = await ApiService.delete(prefix + "training_levels", machine_model);
+    const { data } = await ApiService.delete(
+      prefix + "training_levels",
+      machine_model,
+    );
     delete objects.value[machine_model.toString()];
     return data;
   }

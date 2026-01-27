@@ -1,7 +1,10 @@
 <template>
   <div>
     <div id="editor">
-      <div id="markdown" v-html="compiledMarkdown" />
+      <div
+        id="markdown"
+        v-html="compiledMarkdown"
+      />
     </div>
     <modal
       id="modal-syntaxe"
@@ -37,7 +40,11 @@
       <h6>Citations</h6>
       <span> > Citations </span>
       <div class="row justify-content-md-center">
-        <button type="button" class="btn btn-primary" @click="hideHelp">
+        <button
+          type="button"
+          class="btn btn-primary"
+          @click="hideHelp"
+        >
           Ok
         </button>
       </div>

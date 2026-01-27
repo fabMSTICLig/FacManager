@@ -16,12 +16,18 @@ You should have received a copy of the GNU General Public License along with Fac
 <template>
   <div class="row">
     <div class="col-12">
-      <div v-if="object" class="card">
+      <div
+        v-if="object"
+        class="card"
+      >
         <div class="card-header row justify-content-between">
           <h3 class="col-auto">
             Supplies: <strong>{{ cardName }}</strong>
           </h3>
-          <div class="col-auto btn-group float-end" role="group">
+          <div
+            class="col-auto btn-group float-end"
+            role="group"
+          >
             <button
               v-if="!isNew"
               class="btn btn-danger"
@@ -33,24 +39,31 @@ You should have received a copy of the GNU General Public License along with Fac
           </div>
         </div>
         <div class="card-body">
-          <form ref="editorForm" class="row g-3">
+          <form
+            ref="editorForm"
+            class="row g-3"
+          >
             <div class="col-12 col-md-6">
               <fieldset>
                 <legend>Informations</legend>
                 <div class="col-12">
-                  <label class="form-label" for="name">Name</label>
+                  <label
+                    class="form-label"
+                    for="name"
+                  >Name</label>
                   <input
                     id="name"
                     v-model="object.name"
                     class="form-control"
                     unit="text"
                     required
-                  />
+                  >
                 </div>
                 <div class="col-12">
-                  <label class="form-label" for="description"
-                    >Description :</label
-                  >
+                  <label
+                    class="form-label"
+                    for="description"
+                  >Description :</label>
                   <textarea
                     id="description"
                     v-model="object.description"
@@ -59,8 +72,15 @@ You should have received a copy of the GNU General Public License along with Fac
                 </div>
 
                 <div class="col-12">
-                  <label class="form-label" for="unit">Unit</label>
-                  <select id="unit" v-model="object.unit" class="form-select">
+                  <label
+                    class="form-label"
+                    for="unit"
+                  >Unit</label>
+                  <select
+                    id="unit"
+                    v-model="object.unit"
+                    class="form-select"
+                  >
                     <option
                       v-for="(unitname, unit) in units"
                       :key="unit"
@@ -75,12 +95,18 @@ You should have received a copy of the GNU General Public License along with Fac
               <fieldset>
                 <legend>Machine models</legend>
                 <div class="mb-3">
-                  <DynList v-model="object.models" :resource="fetchMachineModels" />
+                  <DynList
+                    v-model="object.models"
+                    :resource="fetchMachineModels"
+                  />
                 </div>
               </fieldset>
             </div>
 
-            <div class="btn-group col-auto" role="group">
+            <div
+              class="btn-group col-auto"
+              role="group"
+            >
               <button
                 v-if="isNew"
                 class="btn btn-primary"
@@ -125,7 +151,7 @@ import { useMachineModelsStore } from "@/stores/machines";
 const store = useSuppliesStore();
 const { units } = storeToRefs(store);
 const mmstore = useMachineModelsStore();
-const { fetchList:fetchMachineModels } = mmstore;
+const { fetchList: fetchMachineModels } = mmstore;
 const {
   editorForm,
   object,
@@ -135,10 +161,14 @@ const {
   update,
   destroy,
   cancel,
-} = useEditor(store, { name: "", models:[] , units: null }, { name: "supplies" });
+} = useEditor(
+  store,
+  { name: "", models: [], units: null },
+  { name: "supplies" },
+);
 
 const cardName = computed(() =>
-  isNew.value ? "New supply" : object.value.name
+  isNew.value ? "New supply" : object.value.name,
 );
 const route = useRoute();
 

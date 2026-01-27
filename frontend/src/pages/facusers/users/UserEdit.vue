@@ -16,12 +16,18 @@ You should have received a copy of the GNU General Public License along with Fac
 <template>
   <div class="row">
     <div class="col-12">
-      <div v-if="object" class="card">
+      <div
+        v-if="object"
+        class="card"
+      >
         <div class="card-header row justify-content-between">
           <h3 class="col-auto">
             Users: <strong>{{ cardName }}</strong>
           </h3>
-          <div class="col-auto btn-group float-end" role="group">
+          <div
+            class="col-auto btn-group float-end"
+            role="group"
+          >
             <router-link
               class="btn btn-primary"
               role="button"
@@ -43,65 +49,64 @@ You should have received a copy of the GNU General Public License along with Fac
           </div>
         </div>
         <div class="card-body">
-          <form ref="editorForm" class="row g-3">
+          <form
+            ref="editorForm"
+            class="row g-3"
+          >
             <div class="col-12 col-md-3">
               <fieldset>
                 <legend>Informations</legend>
                 <div class="mb-3">
-                  <label class="form-label">Username</label
-                  ><input
+                  <label class="form-label">Username</label><input
                     v-model="object.username"
                     class="form-control"
                     type="text"
                     required
-                  />
+                  >
                 </div>
                 <div class="mb-3">
-                  <label class="form-label">First name</label
-                  ><input
+                  <label class="form-label">First name</label><input
                     v-model="object.first_name"
                     class="form-control"
                     type="text"
                     required
-                  />
+                  >
                 </div>
                 <div class="mb-3">
-                  <label class="form-label">Last name</label
-                  ><input
+                  <label class="form-label">Last name</label><input
                     v-model="object.last_name"
                     class="form-control"
                     type="text"
                     required
-                  />
+                  >
                 </div>
                 <div class="mb-3">
-                  <label class="form-label">Email</label
-                  ><input
+                  <label class="form-label">Email</label><input
                     v-model="object.email"
                     class="form-control"
                     type="email"
                     required
-                  />
+                  >
                 </div>
                 <div class="mb-3 form-check form-switch">
-                  <label class="form-check-label" for="check-active"
-                    >Charter</label
-                  >
+                  <label
+                    class="form-check-label"
+                    for="check-active"
+                  >Charter</label>
                   <input
                     id="check-active"
                     v-model="object.charter"
                     type="checkbox"
                     class="form-check-input"
-                  />
+                  >
                 </div>
                 <div class="mb-3">
-                  <label class="form-label">RGPD accept date</label
-                  ><input
+                  <label class="form-label">RGPD accept date</label><input
                     v-model="object.rgpd_accept"
                     class="form-control"
                     type="date"
                     readonly
-                  />
+                  >
                 </div>
               </fieldset>
             </div>
@@ -129,7 +134,10 @@ You should have received a copy of the GNU General Public License along with Fac
                     </div>
                   </fieldset>
                 </div>
-                <div v-if="object.id" class="col-12 col-md">
+                <div
+                  v-if="object.id"
+                  class="col-12 col-md"
+                >
                   <fieldset>
                     <legend>
                       Training Levels
@@ -160,7 +168,7 @@ You should have received a copy of the GNU General Public License along with Fac
                             type="number"
                             min="0"
                             class="form-control"
-                          />
+                          >
                         </td>
                         <td>
                           <div>
@@ -170,7 +178,7 @@ You should have received a copy of the GNU General Public License along with Fac
                                 v-model="tl.need_manager"
                                 type="checkbox"
                                 class="form-check-input"
-                              />
+                              >
                             </div>
                           </div>
                         </td>
@@ -182,7 +190,10 @@ You should have received a copy of the GNU General Public License along with Fac
             </div>
 
             <div class="row">
-              <div class="btn-group col-auto" role="group">
+              <div
+                class="btn-group col-auto"
+                role="group"
+              >
                 <button
                   v-if="isNew"
                   class="btn btn-primary"
@@ -256,11 +267,11 @@ const {
     email: "",
     users: [],
   },
-  { name: "users" }
+  { name: "users" },
 );
 
 const cardName = computed(() =>
-  isNew.value ? "Nouvel Utilisateur" : object.value.username
+  isNew.value ? "Nouvel Utilisateur" : object.value.username,
 );
 
 const userTrainingLevels = ref([]);
@@ -268,7 +279,10 @@ const userTrainingLevels = ref([]);
 const { objects: machineModels } = storeToRefs(useMachineModelsStore());
 
 async function updateTLs() {
-  await tlStore.bulkUpdate(object.value.id, Object.values(userTrainingLevels.value));
+  await tlStore.bulkUpdate(
+    object.value.id,
+    Object.values(userTrainingLevels.value),
+  );
   showModal({ content: "Training Levels mis à jour" });
 }
 

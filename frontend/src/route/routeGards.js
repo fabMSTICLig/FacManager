@@ -11,8 +11,7 @@
  * You should have received a copy of the GNU General Public License along with FacManager. If not, see <https://www.gnu.org/licenses/>
  *
  * @author Germain Lemasson
-*/
-
+ */
 
 import { useAuthStore } from "@/stores/auth";
 
@@ -36,7 +35,7 @@ export async function requireAuth(to, from, next) {
       });
     }
   } else {
-    window.location.href=import.meta.env.VITE_APP_LOGIN_URL;
+    window.location.href = import.meta.env.VITE_APP_LOGIN_URL;
   }
 }
 export async function requireAdmin(to, from, next) {

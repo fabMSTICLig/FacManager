@@ -16,12 +16,18 @@ You should have received a copy of the GNU General Public License along with Fac
 <template>
   <div class="row">
     <div class="col-12">
-      <div v-if="object" class="card">
+      <div
+        v-if="object"
+        class="card"
+      >
         <div class="card-header row justify-content-between">
           <h3 class="col-auto">
             Projects: <strong>{{ cardName }}</strong>
           </h3>
-          <div class="col-auto btn-group float-end" role="group">
+          <div
+            class="col-auto btn-group float-end"
+            role="group"
+          >
             <router-link
               v-if="!isNew"
               class="btn btn-primary"
@@ -45,43 +51,56 @@ You should have received a copy of the GNU General Public License along with Fac
           </div>
         </div>
         <div class="card-body">
-          <form ref="editorForm" class="row g-3">
+          <form
+            ref="editorForm"
+            class="row g-3"
+          >
             <div class="col-12 col-md-6">
               <fieldset>
                 <legend>Informations</legend>
                 <div class="col-12">
-                  <label class="form-label" for="name">Name</label>
+                  <label
+                    class="form-label"
+                    for="name"
+                  >Name</label>
                   <input
                     id="name"
                     v-model="object.name"
                     class="form-control"
                     type="text"
                     required
-                  />
+                  >
                 </div>
                 <div class="col-12">
-                  <label class="form-label" for="startDate">Start date :</label>
+                  <label
+                    class="form-label"
+                    for="startDate"
+                  >Start date :</label>
                   <input
                     id="startDate"
                     v-model="object.start_date"
                     class="form-control"
                     type="date"
-                  />
+                  >
                 </div>
                 <div class="col-12">
-                  <label class="form-label" for="endDate">End date :</label>
+                  <label
+                    class="form-label"
+                    for="endDate"
+                  >End date :</label>
                   <input
                     id="endDate"
                     v-model="object.end_date"
                     class="form-control"
                     type="date"
-                  />
+                  >
                 </div>
 
                 <div class="col-12">
-                  <label class="form-label" for="description"
-                    >Description :</label
-                  >
+                  <label
+                    class="form-label"
+                    for="description"
+                  >Description :</label>
                   <textarea
                     id="descrption"
                     v-model="object.description"
@@ -89,7 +108,10 @@ You should have received a copy of the GNU General Public License along with Fac
                   />
                 </div>
                 <div class="col-12">
-                  <label class="form-label" for="user">Referent :</label>
+                  <label
+                    class="form-label"
+                    for="user"
+                  >Referent :</label>
                   <Multiselect
                     id="user"
                     ref="msuser"
@@ -108,11 +130,14 @@ You should have received a copy of the GNU General Public License along with Fac
             <div class="col-12 col-md-6">
               <fieldset>
                 <legend>Members</legend>
-                <UserDynList v-model="object.members"> </UserDynList>
+                <UserDynList v-model="object.members" />
               </fieldset>
             </div>
 
-            <div class="btn-group col-auto" role="group">
+            <div
+              class="btn-group col-auto"
+              role="group"
+            >
               <button
                 v-if="isNew"
                 class="btn btn-primary"
@@ -168,7 +193,7 @@ const {
 } = useEditor(store, { name: "", members: [] }, { name: "projects" });
 
 const cardName = computed(() =>
-  isNew.value ? "New project" : object.value.name
+  isNew.value ? "New project" : object.value.name,
 );
 const route = useRoute();
 

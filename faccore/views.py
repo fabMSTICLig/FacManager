@@ -37,9 +37,8 @@ import email.utils
 import json
 from json import JSONEncoder
 
-from .serializers import (SupplySerializer, SupplyUsageSerializer, MachineModelSerializer, ManagerSerializer, MachineSerializer, ReservationTypeSerializer, TrainingLevelSerializer, TrainingLevelListSerializer, ReservationSerializer, ReservationPublicSerializer, ReservationUsageSerializer, EventSerializer, ManagerEventSerializer)
+from .serializers import (SupplySerializer, SupplyUsageSerializer, MachineModelSerializer, ManagerSerializer, MachineSerializer, ReservationTypeSerializer, TrainingLevelSerializer, TrainingLevelListSerializer, ReservationSerializer, ReservationPublicSerializer, ReservationUsageSerializer, EventSerializer)
 from .models import MachineModel, TrainingLevel, Supply, ReservationType, Machine, Manager, SupplyUsage, Reservation, Event
-from django_caldav_event.models import CalDavEvent
 
 from facusers.permissions import IsAdminOrReadOnly, IsAdminOrIsSelf
 from facusers.models import Project
@@ -210,24 +209,6 @@ class ManagerViewSet(viewsets.ModelViewSet):
     serializer_class = ManagerSerializer
     permission_classes = (IsAdminOrReadOnly,)
     search_fields = ['name']
-
-class ManagerEventsView(APIView):
-    permission_classes = [IsAuthenticated]
-    def get(self, request, format=None):
-        mindate = request.query_params.get('mindate', None)
-        maxdate = request.query_params.get('maxdate', None)
-        query = CalDavEvent.objects.all()
-        try:
-            if mindate is not None:
-                mindate = dateutil.parser.parse(mindate)
-                query = query.filter(dtstart__gte=mindate)
-            if maxdate is not None:
-                maxdate = dateutil.parser.parse(maxdate)
-                query = query.filter(dtend__lte=maxdate)
-        except dateutil.parser.ParserError:
-            raise ParseError(detail="Wrong date format")
-        serializer = ManagerEventSerializer(query, many=True)
-        return Response(serializer.data)
 
 class MachineViewSet(viewsets.ModelViewSet):
     queryset = Machine.objects.all()

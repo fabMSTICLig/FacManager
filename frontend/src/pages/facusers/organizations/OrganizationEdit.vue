@@ -16,12 +16,18 @@ You should have received a copy of the GNU General Public License along with Fac
 <template>
   <div class="row">
     <div class="col-12">
-      <div v-if="object" class="card">
+      <div
+        v-if="object"
+        class="card"
+      >
         <div class="card-header row justify-content-between">
           <h3 class="col-auto">
             Organizations: <strong>{{ cardName }}</strong>
           </h3>
-          <div class="col-auto btn-group float-end" role="group">
+          <div
+            class="col-auto btn-group float-end"
+            role="group"
+          >
             <button
               v-if="!isNew"
               class="btn btn-danger"
@@ -33,30 +39,46 @@ You should have received a copy of the GNU General Public License along with Fac
           </div>
         </div>
         <div class="card-body">
-          <form ref="editorForm" class="row g-3">
+          <form
+            ref="editorForm"
+            class="row g-3"
+          >
             <div class="col-12">
-              <label class="form-label" for="name">Name</label>
+              <label
+                class="form-label"
+                for="name"
+              >Name</label>
               <input
                 id="name"
                 v-model="object.name"
                 class="form-control"
                 type="text"
                 required
-              />
+              >
             </div>
             <div class="col-12">
-              <label class="form-label" for="contact">Contact</label>
+              <label
+                class="form-label"
+                for="contact"
+              >Contact</label>
               <input
                 id="contact"
                 v-model="object.contact"
                 class="form-control"
                 type="email"
-              />
+              >
             </div>
 
             <div class="col-12">
-              <label class="form-label" for="type">Type</label>
-              <select id="type" v-model="object.type" class="form-select">
+              <label
+                class="form-label"
+                for="type"
+              >Type</label>
+              <select
+                id="type"
+                v-model="object.type"
+                class="form-select"
+              >
                 <option
                   v-for="(typename, type) in types"
                   :key="type"
@@ -65,7 +87,10 @@ You should have received a copy of the GNU General Public License along with Fac
                 />
               </select>
             </div>
-            <div class="btn-group col-auto" role="group">
+            <div
+              class="btn-group col-auto"
+              role="group"
+            >
               <button
                 v-if="isNew"
                 class="btn btn-primary"
@@ -119,7 +144,7 @@ const {
 } = useEditor(store, { name: "", type: null }, { name: "organizations" });
 
 const cardName = computed(() =>
-  isNew.value ? "New organization" : object.value.name
+  isNew.value ? "New organization" : object.value.name,
 );
 const route = useRoute();
 

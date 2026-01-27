@@ -22,16 +22,16 @@ const emit = defineEmits(["update:modelValue"]);
 
 const props = defineProps({
   resource: {
-    type : Array,
+    type: Array,
     required: true,
   },
   modelValue: {
     type: Array,
     required: true,
   },
-  create:{
+  create: {
     type: Function,
-    default: ()=>{},
+    default: () => {},
   },
   forbidAdd: {
     type: Boolean,
@@ -41,7 +41,6 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-
 });
 
 const input = ref();
@@ -49,11 +48,12 @@ const input = ref();
 const options = computed(() =>
   props.resource.map((o) => {
     return { value: o.id, label: o.name };
-  })
+  }),
 );
 
 function addOption(query) {
-    props.create({ name: query })
+  props
+    .create({ name: query })
     .then((data) => {
       emit("update:modelValue", [].concat(props.modelValue).concat([data.id]));
     })
@@ -65,12 +65,15 @@ function addOption(query) {
 function removeOption(option) {
   emit(
     "update:modelValue",
-    props.modelValue.filter((v) => v != option)
+    props.modelValue.filter((v) => v != option),
   );
 }
 
 function change(v) {
-  emit("update:modelValue", v.filter(e=>typeof e === 'number'));
+  emit(
+    "update:modelValue",
+    v.filter((e) => typeof e === "number"),
+  );
 }
 </script>
 <style src="@vueform/multiselect/themes/default.css"></style>

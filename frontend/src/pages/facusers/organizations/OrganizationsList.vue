@@ -1,6 +1,6 @@
-[warn] --jsx-bracket-same-line is deprecated.
-[warn] Ignored unknown option --loglevel=error. Did you mean --log-level?
-[warn] Ignored unknown option --stdin.
+[warn] --jsx-bracket-same-line is deprecated. [warn] Ignored unknown option
+--loglevel=error. Did you mean --log-level? [warn] Ignored unknown option
+--stdin.
 <!--
 Copyright (C) 2020-2022 LIG Université Grenoble Alpes
 
@@ -22,7 +22,9 @@ You should have received a copy of the GNU General Public License along with Fac
       <div class="card">
         <div class="card-header">
           <div class="row justify-content-between">
-            <h3 class="col-auto">Organizations</h3>
+            <h3 class="col-auto">
+              Organizations
+            </h3>
             <div class="col-auto">
               <router-link
                 class="btn btn-primary float-end"
@@ -37,16 +39,17 @@ You should have received a copy of the GNU General Public License along with Fac
         <div class="card-body">
           <form class="row row-cols-lg-auto g-3 align-items-center">
             <div class="col-12">
-              <label class="form-label visually-hidden" for="searchInput"
-                >Search</label
-              >
+              <label
+                class="form-label visually-hidden"
+                for="searchInput"
+              >Search</label>
               <input
                 id="searchInput"
                 v-model="searchInput"
                 class="form-control"
                 type="search"
                 placeholder="Search"
-              />
+              >
             </div>
           </form>
           <div class="table-responsive">
@@ -55,11 +58,14 @@ You should have received a copy of the GNU General Public License along with Fac
                 <tr>
                   <th>Type</th>
                   <th>Name</th>
-                  <th></th>
+                  <th />
                 </tr>
               </thead>
               <tbody v-if="loaded">
-                <tr v-for="item in objects" :key="item.id">
+                <tr
+                  v-for="item in objects"
+                  :key="item.id"
+                >
                   <td v-text="types[item.type]" />
                   <td v-text="item.name" />
                   <td class="text-end">
@@ -92,7 +98,7 @@ You should have received a copy of the GNU General Public License along with Fac
 
 <script setup>
 import { ref, onBeforeMount } from "vue";
-import useDebouncedRef from "@/composables/useDebouncedRef"
+import useDebouncedRef from "@/composables/useDebouncedRef";
 import { storeToRefs } from "pinia";
 import { useOrganizationsStore } from "@/stores/organizations";
 
@@ -121,7 +127,7 @@ const { refresh } = useSearchStorage(
   fetch,
   { search: searchInput },
   currentPage,
-  perPage.value
+  perPage.value,
 );
 
 onBeforeMount(async () => {

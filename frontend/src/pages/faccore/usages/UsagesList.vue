@@ -18,8 +18,13 @@ You should have received a copy of the GNU General Public License along with Fac
     <div class="col-12">
       <div class="card">
         <div class="card-header">
-          <h3 class="float-start">{{ title }}</h3>
-          <div class="btn-group float-end" role="group"></div>
+          <h3 class="float-start">
+            {{ title }}
+          </h3>
+          <div
+            class="btn-group float-end"
+            role="group"
+          />
         </div>
         <div class="card-body">
           <div class="col-12">
@@ -27,27 +32,40 @@ You should have received a copy of the GNU General Public License along with Fac
             <div>
               <form class="row g-3">
                 <div class="col-auto">
-                  <label for="mindate" class="form-label">Min Date</label>
+                  <label
+                    for="mindate"
+                    class="form-label"
+                  >Min Date</label>
                   <input
                     id="mindate"
                     v-model="fMinDate"
                     type="date"
                     class="form-control"
-                  />
+                  >
                 </div>
                 <div class="col-auto">
-                  <label for="maxdate" class="form-label">Max Date</label>
+                  <label
+                    for="maxdate"
+                    class="form-label"
+                  >Max Date</label>
                   <input
                     id="maxdate"
                     v-model="fMaxDate"
                     type="date"
                     class="form-control"
-                  />
+                  >
                 </div>
                 <div class="col-auto">
-                  <label for="status" class="form-label">Status</label>
-                  <select id="status" v-model="fStatus" class="form-control">
-                    <option></option>
+                  <label
+                    for="status"
+                    class="form-label"
+                  >Status</label>
+                  <select
+                    id="status"
+                    v-model="fStatus"
+                    class="form-control"
+                  >
+                    <option />
                     <option>Requested</option>
                     <option>Accepted</option>
                     <option>Denied</option>
@@ -55,29 +73,53 @@ You should have received a copy of the GNU General Public License along with Fac
                   </select>
                 </div>
                 <div class="col-auto">
-                  <label for="type" class="form-label">Type</label>
-                  <select id="type" v-model="fType" class="form-control">
-                    <option></option>
-                    <option v-for="t in resaTypes" :key="t.id" :value="t.id">
+                  <label
+                    for="type"
+                    class="form-label"
+                  >Type</label>
+                  <select
+                    id="type"
+                    v-model="fType"
+                    class="form-control"
+                  >
+                    <option />
+                    <option
+                      v-for="t in resaTypes"
+                      :key="t.id"
+                      :value="t.id"
+                    >
                       {{ t.name }}
                     </option>
                   </select>
                 </div>
 
                 <div class="col-auto">
-                  <label for="validated" class="form-label">Validated</label>
+                  <label
+                    for="validated"
+                    class="form-label"
+                  >Validated</label>
                   <select
                     id="validated"
                     v-model="fValidated"
                     class="form-control"
                   >
-                    <option></option>
-                    <option value="true">True</option>
-                    <option value="false">False</option>
+                    <option />
+                    <option value="true">
+                      True
+                    </option>
+                    <option value="false">
+                      False
+                    </option>
                   </select>
                 </div>
-                <div v-if="displayUser" class="col-auto">
-                  <label class="form-label" for="resa-user">User :</label>
+                <div
+                  v-if="displayUser"
+                  class="col-auto"
+                >
+                  <label
+                    class="form-label"
+                    for="resa-user"
+                  >User :</label>
                   <Multiselect
                     id="resa-user"
                     ref="msuser"
@@ -92,8 +134,14 @@ You should have received a copy of the GNU General Public License along with Fac
                     :options="findUser"
                   />
                 </div>
-                <div v-if="displayProject" class="col-auto">
-                  <label class="form-label" for="project">Project :</label>
+                <div
+                  v-if="displayProject"
+                  class="col-auto"
+                >
+                  <label
+                    class="form-label"
+                    for="project"
+                  >Project :</label>
                   <Multiselect
                     id="resa-user"
                     ref="msproject"
@@ -127,30 +175,43 @@ You should have received a copy of the GNU General Public License along with Fac
                 <th>Date</th>
                 <th>Duration (h)</th>
                 <th>Status</th>
-                <th v-if="displayUser">User</th>
-                <th v-if="displayProject">Project</th>
+                <th v-if="displayUser">
+                  User
+                </th>
+                <th v-if="displayProject">
+                  Project
+                </th>
               </tr>
             </thead>
             <tbody>
-              <template v-for="rtype in reservations" :key="rtype.id">
+              <template
+                v-for="rtype in reservations"
+                :key="rtype.id"
+              >
                 <tr>
                   <th>{{ rtype.name }}</th>
                   <th>{{ rtype.total }}</th>
-                  <th colspan="3"></th>
+                  <th colspan="3" />
                 </tr>
-                <tr v-for="resa in rtype.usages" :key="resa.id">
+                <tr
+                  v-for="resa in rtype.usages"
+                  :key="resa.id"
+                >
                   <td>
                     <router-link
                       :to="{
                         name: 'reservations',
                         params: { resaid: resa.id },
                       }"
-                      >{{ formatDate(resa.start_date) }}</router-link
                     >
+                      {{ formatDate(resa.start_date) }}
+                    </router-link>
                   </td>
                   <td>{{ resa.duration }}</td>
                   <td>{{ resa.status }}</td>
-                  <td v-if="displayUser">{{ users[resa.user].username }}</td>
+                  <td v-if="displayUser">
+                    {{ users[resa.user].username }}
+                  </td>
                   <td v-if="displayProject">
                     {{ resa.project ? projects[resa.project].name : "" }}
                   </td>
@@ -165,35 +226,52 @@ You should have received a copy of the GNU General Public License along with Fac
                 <th>Date</th>
                 <th>Quantity</th>
                 <th>validated</th>
-                <th v-if="displayUser">User</th>
-                <th v-if="displayProject">Project</th>
+                <th v-if="displayUser">
+                  User
+                </th>
+                <th v-if="displayProject">
+                  Project
+                </th>
               </tr>
             </thead>
             <tbody>
-              <template v-for="supply in supplyUsages" :key="supply.id">
+              <template
+                v-for="supply in supplyUsages"
+                :key="supply.id"
+              >
                 <tr>
                   <th>{{ supply.name }}</th>
                   <th>{{ supply.total + " " + supply.unit }}</th>
-                  <th colspan="3"></th>
+                  <th colspan="3" />
                 </tr>
-                <tr v-for="su in supply.usages" :key="su.id">
+                <tr
+                  v-for="su in supply.usages"
+                  :key="su.id"
+                >
                   <td>
                     <router-link
                       :to="{
                         name: 'reservations',
                         params: { resaid: resadict[su.reservation].id },
                       }"
-                      >{{
-                        formatDate(resadict[su.reservation].start_date)
-                      }}</router-link
                     >
+                      {{
+                        formatDate(resadict[su.reservation].start_date)
+                      }}
+                    </router-link>
                   </td>
                   <td>{{ su.quantity + " " + supply.unit }}</td>
                   <td>
-                    <svg v-show="su.validated" class="svg-icon-small">
+                    <svg
+                      v-show="su.validated"
+                      class="svg-icon-small"
+                    >
                       <use href="#check" />
                     </svg>
-                    <svg v-show="!su.validated" class="svg-icon-small">
+                    <svg
+                      v-show="!su.validated"
+                      class="svg-icon-small"
+                    >
                       <use href="#cross" />
                     </svg>
                   </td>
@@ -254,14 +332,14 @@ const fUser = ref(null);
 const fMinDate = ref(
   "" +
     spacetime(new Date(new Date().getFullYear(), 0, 1)).format(
-      "{year}-{iso-month}-{date-pad}"
-    )
+      "{year}-{iso-month}-{date-pad}",
+    ),
 );
 const fMaxDate = ref(
   "" +
     spacetime(new Date(new Date().getFullYear(), 11, 31)).format(
-      "{year}-{iso-month}-{date-pad}"
-    )
+      "{year}-{iso-month}-{date-pad}",
+    ),
 );
 const fType = ref(null);
 const fStatus = ref(null);
@@ -281,7 +359,7 @@ async function findUser(query) {
 }
 function formatDate(startdate) {
   return spacetime(startdate).format(
-    "{year}-{iso-month}-{date-pad} {hour-24-pad}:{minute-pad}"
+    "{year}-{iso-month}-{date-pad} {hour-24-pad}:{minute-pad}",
   );
 }
 

@@ -11,7 +11,7 @@
  * You should have received a copy of the GNU General Public License along with FacManager. If not, see <https://www.gnu.org/licenses/>
  *
  * @author Germain Lemasson
-*/
+ */
 
 import { createRouter, createWebHashHistory, RouterView } from "vue-router";
 import { requireAdmin, requireAuth } from "./routeGards";
@@ -133,7 +133,7 @@ const routes = [
           routeparam: "userid",
           routedelete: "users",
         },
-    component: RouterView,
+        component: RouterView,
         children: [
           {
             path: "edit",
@@ -142,8 +142,7 @@ const routes = [
               routeparam: "userid",
               routedelete: "users",
             },
-            component: () =>
-              import("../pages/facusers/users/UserEdit.vue"),
+            component: () => import("../pages/facusers/users/UserEdit.vue"),
           },
           {
             path: "usages",

@@ -12,14 +12,13 @@ You should have received a copy of the GNU General Public License along with Fac
 
 @author Germain Lemasson
 """
-
+import json
 from collections import OrderedDict
 from rest_framework import serializers, exceptions
 from django.contrib.auth import get_user_model
 
 from .app_settings import app_settings
 from .models import MachineModel, TrainingLevel, Supply, ReservationType, Machine, Manager, SupplyUsage, Reservation, Event
-from django_caldav_event.models import CalDavEvent
 
 class ChoicesField(serializers.Field):
     """Custom ChoiceField serializer field."""
@@ -40,6 +39,12 @@ class ChoicesField(serializers.Field):
                 return i
         raise serializers.ValidationError(
             "Acceptable values are {0}.".format(list(self._choices.values())))
+
+class JSONField(serializers.Field):
+
+    def to_representation(self, obj):
+        """Used while retrieving value for the field."""
+        return json.loads(obj)
 
 
 class SupplySerializer(serializers.ModelSerializer):
@@ -86,15 +91,10 @@ class MachineModelSerializer(serializers.ModelSerializer):
 class ManagerSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='user.id')
     name = serializers.ReadOnlyField(source='user.first_name')
+    business_hours = JSONField()
     class Meta:
         model = Manager
-        fields = ['id', 'user', 'calendar', 'name']
-
-class ManagerEventSerializer(serializers.ModelSerializer):
-    manager = serializers.ReadOnlyField(source='calendar.manager.pk')
-    class Meta:
-        model = CalDavEvent
-        fields = ['id', 'manager', 'dtstart', 'dtend']
+        fields = ['id', 'user', 'business_hours', 'name']
 
 class ReservationTypeSerializer(serializers.ModelSerializer):
     class Meta:

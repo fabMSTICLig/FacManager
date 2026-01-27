@@ -11,7 +11,7 @@
  * You should have received a copy of the GNU General Public License along with FacManager. If not, see <https://www.gnu.org/licenses/>
  *
  * @author Germain Lemasson
-*/
+ */
 
 import { createApp } from "vue";
 import { createPinia } from "pinia";
@@ -29,10 +29,10 @@ ApiService.init();
 const app = createApp(App);
 var pinia = createPinia();
 app.use(pinia);
-app.use(router)
+app.use(router);
 app.use(Modal);
 
-const authStore = useAuthStore()
+const authStore = useAuthStore();
 
 app.config.globalProperties.$filters = {
   field(value, fieldname) {
@@ -44,4 +44,3 @@ app.config.globalProperties.$filters = {
 authStore.checkAuth().finally(() => {
   app.mount("#app");
 });
-

@@ -4,22 +4,25 @@
       <div class="card">
         <div class="card-header">
           <div class="row justify-content-between">
-            <h3 class="col-auto">Utilisateurs</h3>
+            <h3 class="col-auto">
+              Utilisateurs
+            </h3>
           </div>
         </div>
         <div class="card-body">
           <form class="row row-cols-lg-auto g-3 align-items-center">
             <div class="col-12">
-              <label class="form-label visually-hidden" for="searchInput"
-                >Chercher</label
-              >
+              <label
+                class="form-label visually-hidden"
+                for="searchInput"
+              >Chercher</label>
               <input
                 id="searchInput"
                 v-model="searchInput"
                 class="form-control"
                 type="search"
                 placeholder="Search"
-              />
+              >
             </div>
           </form>
 
@@ -30,22 +33,29 @@
                   <th>Nom utilisateur</th>
                   <th>Prénom Nom</th>
                   <th>Validated</th>
-                  <th></th>
+                  <th />
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="item in objects" :key="item.id">
+                <tr
+                  v-for="item in objects"
+                  :key="item.id"
+                >
                   <td v-text="item.username" />
                   <td>
-                    <a :href="'mailto:' + item.email"
-                      >{{ item.first_name }} {{ item.last_name }}</a
-                    >
+                    <a :href="'mailto:' + item.email">{{ item.first_name }} {{ item.last_name }}</a>
                   </td>
                   <td>
-                    <svg v-show="item.charter" class="svg-icon">
+                    <svg
+                      v-show="item.charter"
+                      class="svg-icon"
+                    >
                       <use href="#check" />
                     </svg>
-                    <svg v-show="!item.charter" class="svg-icon">
+                    <svg
+                      v-show="!item.charter"
+                      class="svg-icon"
+                    >
                       <use href="#cross" />
                     </svg>
                   </td>
@@ -108,7 +118,7 @@ const { refresh } = useSearchStorage(
   fetch,
   { search: searchInput },
   currentPage,
-  perPage.value
+  perPage.value,
 );
 
 onBeforeMount(async () => {

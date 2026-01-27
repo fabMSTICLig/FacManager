@@ -10,21 +10,31 @@
       :id="'button' + uid"
       href=""
       class="dropdown-toggle"
-      :class="[isNav ? 'nav-link' : 'btn '+btnStyle, { show: show }]"
+      :class="[isNav ? 'nav-link' : 'btn ' + btnStyle, { show: show }]"
       data-bs-toggle="dropdown"
       aria-expanded="false"
       @click.prevent="toogle"
-      >{{ label }}</a
+    >{{ label }}</a>
+    <ul
+      :id="'tooltip' + uid"
+      class="dropdown-menu"
+      :class="{ show: show }"
+      :style="show ? style : ''"
     >
-    <ul :id="'tooltip' + uid" class="dropdown-menu" :class="{ show: show }" :style="show ? style : ''">
-      <li v-for="item in items" :key="item.label">
-        <router-link v-slot="{ href, navigate }" :to="item.to" custom>
+      <li
+        v-for="item in items"
+        :key="item.label"
+      >
+        <router-link
+          v-slot="{ href, navigate }"
+          :to="item.to"
+          custom
+        >
           <a
             :href="href"
             class="dropdown-item"
             @click="goto($event, navigate)"
-            >{{ item.label }}</a
-          >
+          >{{ item.label }}</a>
         </router-link>
       </li>
     </ul>
@@ -51,13 +61,14 @@ defineProps({
   },
   btnStyle: {
     type: String,
-    default: 'btn-primary',
-  }
+    default: "btn-primary",
+  },
 });
 const uid = uuidv4();
 const show = ref(false);
 
-const style="position: absolute; inset: 0px auto auto 0px; margin: 0px; transform: translate(0px, 40px);"
+const style =
+  "position: absolute; inset: 0px auto auto 0px; margin: 0px; transform: translate(0px, 40px);";
 
 const toogle = function () {
   show.value = !show.value;

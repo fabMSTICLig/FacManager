@@ -5,7 +5,7 @@
     "dev": "vite",
     "build": "vite build --emptyOutDir",
     "watch": "vite build --watch --emptyOutDir --mode development",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
+    "lint": "eslint --ext .js,.vue --ignore-pattern .gitignore --fix src",
     "formatall": "prettier .  --write",
     "format": "prettier --write",
     "preview": "vite preview"

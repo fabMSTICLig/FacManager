@@ -1,4 +1,3 @@
-
 import { ref } from "vue";
 import { defineStore } from "pinia";
 import ApiService from "@/commons/api.service";
@@ -11,5 +10,5 @@ export const useOrganizationsStore = defineStore("organizations", () => {
     types.value = data;
     return data;
   }
-  return {...useCRUDStore("organizations"),types, fetchTypes}
+  return { ...useCRUDStore("organizations"), types, fetchTypes };
 });
